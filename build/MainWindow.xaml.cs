@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Client.Objs.Windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,14 @@ namespace Client
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void connectButton_Click(object sender, RoutedEventArgs e)
+        {
+            Lobby main = new Lobby();
+            App.Current.MainWindow = main;
+            this.Close();
+            main.Show();
         }
     }
 }
