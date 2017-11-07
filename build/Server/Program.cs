@@ -6,6 +6,7 @@ using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections;
 using Network;
 using Newtonsoft.Json;
+using Servers.Sources;
 
 namespace ServerApplication
 {
@@ -17,15 +18,11 @@ namespace ServerApplication
 
     class Program
     {
-        public static int Test(Object str)
+        public static void Main(string[] args)
         {
-            Test test = JsonConvert.DeserializeObject<Test>(str.ToString());
-            return 2;
-        }
-
-        static void Main(string[] args)
-        {
-            string addr = Server.Instance.Start(Test);
+            Referee referee = new Referee();
+            string addr = Server.Instance.Start(referee.EntryPoint);
+            Console.WriteLine("Server running on:" + addr);
             Console.ReadLine();
         }
     }
