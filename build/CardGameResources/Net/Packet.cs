@@ -11,7 +11,6 @@ namespace CardGameResources.Net
         ERR = -1,
         SYS = 0,
         GAME,
-        API,
         ENV
     }
     public class Packet
