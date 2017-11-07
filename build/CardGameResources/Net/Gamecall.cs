@@ -8,25 +8,30 @@ namespace CardGameResources.Net
 {
     public enum GameAction
     {
-        PLAY_CARD = 0,
-        TAKE_TRUMP,
-        TAKE_TRUMP_AS,
-        SHOT_BELOT,
-        SHOT_REBELOT
+        C_PLAY_CARD, // Card
+        C_TAKE_TRUMP, // bool
+        C_TAKE_TRUMP_AS, // string
+        C_SHOT_BELOT, // void
+        C_SHOT_REBELOT, // void
+        S_SET_USER_DECK, // Deck
+        S_SET_BOARD_DECK, // Deck
+        S_SET_LASTROUND_DECK, // Dictionary<string, Card> (size: 4)
+        S_SET_TRUMP, // TrumpInfos
+        S_REQUEST_TRUMP_FROM // KeyValuePair<int, string>
     }
 
     public class Gamecall
     {
         private GameAction action;
-        private List<string> args;
+        private Object data;
 
-        public void GameCall(GameAction action_, List<string> args_)
+        public void GameCall(GameAction action_, Object data_)
         {
             this.Action = action_;
-            this.Args = args_;
+            this.Data = data_;
         }
 
         public GameAction Action { get => action; set => action = value; }
-        public List<string> Args { get => args; set => args = value; }
+        public object Data { get => data; set => data = value; }
     }
 }

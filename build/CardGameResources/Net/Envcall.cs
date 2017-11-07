@@ -18,7 +18,7 @@ namespace CardGameResources.Net
     public class Envcall
     {
         private EnvInfos type;
-        Object data;
+        private Object data;
 
         public Envcall(EnvInfos type_, Object data_)
         {
