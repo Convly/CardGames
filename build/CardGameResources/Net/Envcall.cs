@@ -8,7 +8,12 @@ namespace CardGameResources.Net
 {
     public enum EnvInfos
     {
-        USER_LIST
+        S_USER_LIST, // List<string> (size: 0-4)
+        S_SCORES, // List<int> (size: 2)
+        S_SET_TOUR, // string
+        S_SET_REMAINING_TIME, // int
+        S_SET_TEAM, // Dictionary<string, int>
+
     }
     public class Envcall
     {
