@@ -124,7 +124,7 @@ namespace Network
                     _ip = clientIP,
                     _port = clientPort
                 };
-                Server.Instance._clients.Add(dataObject.name.ToString(), infosClient);
+                Server.Instance._clients.Add(dataObject.Name.ToString(), infosClient);
             }
             CallBackFct(dataObject);
         }
