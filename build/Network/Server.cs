@@ -32,6 +32,8 @@ namespace Network
             }
         }
 
+        public Dictionary<string, InfosClient> Clients { get => clients; set => clients = value; }
+
         private Server() { }
 
         ~Server()
@@ -49,7 +51,7 @@ namespace Network
         private string          _serverIP;
         private int             _serverPort;
         public int              _currentId = 0;
-        public Dictionary<string, InfosClient> _clients = new Dictionary<string, InfosClient>();
+        private Dictionary<string, InfosClient> clients = new Dictionary<string, InfosClient>();
 
         public static Func<Object, int>  CallBackFct;
 
@@ -97,11 +99,26 @@ namespace Network
         public bool sendDataToClient(string name, Object data)
         {
             InfosClient value;
-            if (!_clients.TryGetValue(name, out value))
+            if (!Clients.TryGetValue(name, out value))
             {
                 return false;
             }
             NetworkComms.SendObject("Message", value._ip, value._port, JsonConvert.SerializeObject(data));
+            return true;
+        }
+
+        /// <summary>
+        /// Send an object to all client
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool SendToAllClient(Object data)
+        {
+            foreach (var user in this.Clients)
+            {
+                InfosClient value = user.Value;
+                NetworkComms.SendObject("Message", value._ip, value._port, JsonConvert.SerializeObject(data));
+            }
             return true;
         }
 
@@ -117,14 +134,14 @@ namespace Network
             int     clientPort = int.Parse(connection.ConnectionInfo.RemoteEndPoint.ToString().Split(':').Last());
             dynamic dataObject = JsonConvert.DeserializeObject<dynamic>(data);
 
-            if (!Server.Instance._clients.ContainsKey(dataObject.name.ToString()))
+            if (!Server.Instance.Clients.ContainsKey(dataObject.Name.ToString()))
             {
                 InfosClient infosClient = new InfosClient()
                 {
                     _ip = clientIP,
                     _port = clientPort
                 };
-                Server.Instance._clients.Add(dataObject.name.ToString(), infosClient);
+                Server.Instance.Clients.Add(dataObject.Name.ToString(), infosClient);
             }
             CallBackFct(dataObject);
         }

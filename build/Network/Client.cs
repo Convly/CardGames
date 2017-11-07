@@ -36,7 +36,7 @@ namespace Network
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.Error.WriteLine(e.Message);
             }
         }
 
@@ -63,7 +63,7 @@ namespace Network
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.Error.WriteLine(e.Message);
             }
         }
 
