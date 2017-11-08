@@ -25,7 +25,7 @@ namespace CardGameResources.Net
         private GameAction action;
         private Object data;
 
-        public void GameCall(GameAction action_, Object data_)
+        public Gamecall(GameAction action_, Object data_)
         {
             this.Action = action_;
             this.Data = data_;

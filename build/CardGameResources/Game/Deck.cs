@@ -8,7 +8,7 @@ namespace CardGameResources.Game
 {
     public class Deck
     {
-        private List<Card> array;
+        private List<Card> array = new List<Card>();
 
         public Deck()
         {
