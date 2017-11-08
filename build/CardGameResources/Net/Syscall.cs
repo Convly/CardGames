@@ -8,21 +8,23 @@ namespace CardGameResources.Net
 {
     public enum SysCommand
     {
-        REGISTER = 0,
-        QUIT
+        C_REGISTER, // void
+        C_QUIT, // void
+        S_DISCONNECTED, // string
+        S_CONNECTED // void
     }
     public class Syscall
     {
         private SysCommand command;
-        private List<string> args;
+        private Object data;
 
-        public Syscall(SysCommand command_, List<string> args_)
+        public Syscall(SysCommand command_, Object data_)
         {
             this.Command = command_;
-            this.Args = args_;
+            this.Data = data_;
         }
 
         public SysCommand Command { get => command; set => command = value; }
-        public List<string> Args { get => args; set => args = value; }
+        public object Data { get => data; set => data = value; }
     }
 }

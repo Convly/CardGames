@@ -10,12 +10,15 @@ namespace CardGameResources.Net
     {
         UNKNOWN_ERROR,
         BAD_ARGUMENT,
-        SERVER_FULL
+        SERVER_FULL,
+        FORBIDDEN_CARD,
+        FORBIDDEN_ACTION,
+        BROKEN_RULE
     }
     public class Errcall
     {
         private Err type = Err.UNKNOWN_ERROR;
-        private string message = "Error constructed without specific message";
+        private string message = "An unexpected error has been thrown";
 
         public Errcall(Err type_, string message_)
         {
