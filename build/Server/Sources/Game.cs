@@ -17,11 +17,15 @@ namespace Servers.Sources
         private Deck masterCopy = new Deck();
         private Dictionary<string, Deck> usersDeck = new Dictionary<string, Deck> { };
         private TrumpInfos trumpInfos = null;
+        private Dictionary<string, Card> lastRound = new Dictionary<string, Card>();
+        private string currentPlayerName = "";
 
         public List<string> Users { get => users; set => users = value; }
         public Dictionary<string, int> Teams { get => teams; set => teams = value; }
         public Dictionary<string, Deck> UsersDeck { get => usersDeck; set => usersDeck = value; }
         public TrumpInfos TrumpInfos { get => trumpInfos; set => trumpInfos = value; }
+        public string CurrentPlayerName { get => currentPlayerName; set => currentPlayerName = value; }
+        public Dictionary<string, Card> LastRound { get => lastRound; set => lastRound = value; }
 
         public Game()
         {
@@ -66,7 +70,7 @@ namespace Servers.Sources
             this.TrumpInfos = new TrumpInfos(this.masterCopy.Array.ElementAt(index));
             this.masterCopy.Remove(index);
             Console.WriteLine("The trump is set to " + this.TrumpInfos.Card.Value + ":" + this.TrumpInfos.Card.Color);
-            Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_TRUMP, this.TrumpInfos)));
+            Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, new Deck(new List<Card> { this.TrumpInfos.Card }))));
         }
 
         public void StartGame()
@@ -112,5 +116,23 @@ namespace Servers.Sources
             this.InitMasterDeck();
             this.InitUsersDeck();
         }
+
+        /**
+         * 
+         * SYS 
+         * 
+         */
+
+        //private void SetRemainingTime(Func<Object, int> callback, int duration)
+        //{
+        //    Timer t = new Timer(new TimerCallback(callback));
+        //    t.Start();
+        //}
+
+        /**
+         * 
+         * RULES
+         * 
+         */
     }
 }

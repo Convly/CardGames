@@ -12,6 +12,11 @@ namespace CardGameResources.Game
         private string owner = null;
         private string realColor = null;
 
+        public TrumpInfos()
+        {
+
+        }
+
         public TrumpInfos(Card card_)
         {
             this.Card = card_;
