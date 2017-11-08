@@ -24,7 +24,9 @@ namespace Servers.Sources
         private List<int> scores = new List<int> { 0, 0 };
         private List<Deck> points = new List<Deck> { new Deck(), new Deck()};
         // States
-        private bool locker = false;
+        private bool takeTrump_lock = false;
+        private bool takeTrumpAs_lock = false;
+        private bool gamePlayTurn_lock = false;
         private bool trumpPhase_lock = false;
         private bool playPhase_lock = false;
 
@@ -34,13 +36,16 @@ namespace Servers.Sources
         public TrumpInfos TrumpInfos { get => trumpInfos; set => trumpInfos = value; }
         public string CurrentPlayerName { get => currentPlayerName; set => currentPlayerName = value; }
         public Dictionary<string, Card> LastRound { get => lastRound; set => lastRound = value; }
-        public bool TrumpPhase_lock { get => trumpPhase_lock; set => trumpPhase_lock = value; }
-        public bool Locker { get => locker; set => locker = value; }
+        public bool TrumpPhase_lock { get => TrumpPhase_lock1; set => TrumpPhase_lock1 = value; }
         public List<string> Colors { get => colors; set => colors = value; }
-        public bool PlayPhase_lock { get => playPhase_lock; set => playPhase_lock = value; }
         public List<int> Scores { get => scores; set => scores = value; }
         public List<Deck> Points { get => points; set => points = value; }
         public Deck BoardDeck { get => boardDeck; set => boardDeck = value; }
+        public bool TakeTrump_lock { get => takeTrump_lock; set => takeTrump_lock = value; }
+        public bool TakeTrumpAs_lock { get => takeTrumpAs_lock; set => takeTrumpAs_lock = value; }
+        public bool GamePlayTurn_lock { get => gamePlayTurn_lock; set => gamePlayTurn_lock = value; }
+        public bool TrumpPhase_lock1 { get => trumpPhase_lock; set => trumpPhase_lock = value; }
+        public bool PlayPhase_lock { get => playPhase_lock; set => playPhase_lock = value; }
 
         public Game()
         {
@@ -145,17 +150,17 @@ namespace Servers.Sources
             this.TrumpPhase_lock = true;
             int phase = 1;
             Console.WriteLine("Trump Phase");
-            while (trumpPhase_lock && phase <= 2)
+            while (TrumpPhase_lock1 && phase <= 2)
             {
                 Console.WriteLine("Turn " + phase);
                 foreach (var user in this.Users)
                 {
                     Console.WriteLine("New turn for " + user);
-                    this.Locker = true;
+                    this.TrumpPhaseInitLock(phase);
                     this.CurrentPlayerName = user;
                     Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.ENV, new Envcall(EnvInfos.S_SET_TOUR, user)));
                     Network.Server.Instance.sendDataToClient(user, new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_REQUEST_TRUMP_FROM, new KeyValuePair<int, string>(phase, user))));
-                    while (Locker) ;
+                    this.TrumpPhaseWait(phase);
                     if (this.TrumpInfos.Owner != null)
                         break;
                 }
@@ -170,6 +175,22 @@ namespace Servers.Sources
             Console.WriteLine("Launch Game!");
             Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_TRUMP, this.TrumpInfos)));
             return true;
+        }
+
+        private void TrumpPhaseInitLock(int phase)
+        {
+            if (phase == 1)
+                this.TakeTrump_lock = true;
+            else
+                this.TakeTrumpAs_lock = true;
+        }
+
+        private void TrumpPhaseWait(int phase)
+        {
+            if (phase == 1)
+                while (this.TakeTrump_lock) ;
+            else
+                while (this.TakeTrumpAs_lock) ;
         }
 
         public void TakeTrump_callback(string name, bool ans)
@@ -187,7 +208,7 @@ namespace Servers.Sources
                 Console.WriteLine("Trump updated, exiting phase...");
             }
 
-            this.Locker = false;
+            this.TakeTrump_lock = false;
         }
 
         public void TakeTrumpAs_callback(string name, string color)
@@ -205,7 +226,7 @@ namespace Servers.Sources
                 Console.WriteLine("Trump updated, exiting phase...");
             }
 
-            this.Locker = false;
+            this.TakeTrumpAs_lock = false;
         }
 
         private bool PlayPhase()
@@ -216,13 +237,59 @@ namespace Servers.Sources
             {
                 foreach (var user in this.Users)
                 {
-                    this.Locker = true;
+                    Console.WriteLine("New turn for " + user);
+                    this.GamePlayTurn_lock = true;
                     this.CurrentPlayerName = user;
                     Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.ENV, new Envcall(EnvInfos.S_SET_TOUR, user)));
-                    while (Locker) ;
+                    while (this.GamePlayTurn_lock) ;
                 }
             }
             return true;
+        }
+
+        private int GamePlayCheckMove(Deck userDeck, Card playedCard, Deck board, string color, bool powerCheck)
+        {
+            Deck colorDeck = new Deck();
+            foreach (var c in userDeck.Array)
+            {
+                if (c.Color == color)
+                    colorDeck.Add(c);
+            }
+            if (colorDeck.Array.Count() == 0)
+                return 4;
+
+            if (playedCard.Color != color)
+                return 3;
+
+            if (powerCheck)
+            {
+                Card maxColorCard = (board.Array.Count() > 0)? board.Array.ElementAt(0): null;
+                foreach (var c in BoardDeck.Array)
+                {
+                    if (maxColorCard.Value < c.Value && c.Color == color)
+                    {
+                        maxColorCard = c;
+                    }
+                }
+                bool haveGreater = false;
+                foreach (var c in colorDeck.Array)
+                {
+                    if (c.Value > maxColorCard.Value)
+                        haveGreater = true;
+                }
+                if (haveGreater && playedCard.Value < maxColorCard.Value)
+                    return 1;
+            }
+            return 0;
+        }
+
+        private void PlayCard(string name, Card card)
+        {
+            this.UsersDeck[name].Remove(card);
+            this.BoardDeck.Add(card);
+            Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, this.BoardDeck)));
+            Network.Server.Instance.sendDataToClient(name, new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[name])));
+            this.GamePlayTurn_lock = false;
         }
 
         public void PlayCard_callback(string name, Card card)
@@ -230,12 +297,40 @@ namespace Servers.Sources
             if (name != this.CurrentPlayerName)
                 return;
 
-            // TODO: CHECK RULES
             if (this.UsersDeck[name].Array.Contains(card))
             {
-                this.UsersDeck[name].Remove(card);
-                //this.
-                this.Locker = false;
+                // Get main color if it exists
+                string color = card.Color;
+                if (this.BoardDeck.Array.Count() > 0)
+                    color = BoardDeck.Array.ElementAt(0).Color;
+                int colorCheck = this.GamePlayCheckMove(this.UsersDeck[name], card, BoardDeck, color, false);
+                switch (colorCheck)
+                {
+                    case 0:
+                        this.PlayCard(name, card);
+                        break;
+                    case 3:
+                        Network.Server.Instance.sendDataToClient(name, new Packet("root", PacketType.ERR, new Errcall(Err.FORBIDDEN_CARD, "You have some " + color + " to play!")));
+                        break;
+                    case 4:
+                        int trumpCheck = this.GamePlayCheckMove(this.UsersDeck[name], card, BoardDeck, this.TrumpInfos.RealColor, true);
+                        switch (trumpCheck)
+                        {
+                            case 0:
+                                this.PlayCard(name, card);
+                                break;
+                            case 1:
+                                Network.Server.Instance.sendDataToClient(name, new Packet("root", PacketType.ERR, new Errcall(Err.FORBIDDEN_CARD, "You have a better card than a " + card.Value + " of " + card.Color + "(trump) to play!")));
+                                break;
+                            case 3:
+                                Network.Server.Instance.sendDataToClient(name, new Packet("root", PacketType.ERR, new Errcall(Err.FORBIDDEN_CARD, "You have some " + TrumpInfos.RealColor + "(which is trump color) to play!")));
+                                break;
+                            case 4:
+                                this.PlayCard(name, card);
+                                break;
+                        }
+                        break;
+                }
             }
         }
 

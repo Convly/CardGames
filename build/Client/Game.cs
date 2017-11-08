@@ -159,7 +159,7 @@ namespace Client
                     trump = JsonConvert.DeserializeObject<TrumpInfos>(game.Data.ToString());
                     GameBoard.Instance.trump_img.Source = new BitmapImage(new Uri(String.Format("/Client;component/Img/cards/" + trump.Card.Color + "/" + trump.Card.Value.ToString() + ".png"), UriKind.Relative));
                     GameBoard.Instance.trump_labl.Content = trump.RealColor;
-                    int index = usersList.FindIndex(trump.Owner.StartsWith);
+                    int index = (UsersList.FindIndex(Name.StartsWith) + usersList.FindIndex(trump.Owner.StartsWith)) % 4;
                     switch (index)
                     {
                         case 0:
