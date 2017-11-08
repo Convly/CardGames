@@ -31,8 +31,8 @@
         <Label Content="Label" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="101,176,0,0" VerticalAlignment="Top" RenderTransformOrigin="2.981,1.688" Height="34" Width="70"/>
         <Label Content="Label" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="176,176,0,0" VerticalAlignment="Top" RenderTransformOrigin="4.308,0.525" Height="34" Width="70"/>
         <Label Content="Label" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="251,176,0,0" VerticalAlignment="Top" RenderTransformOrigin="6.218,0.68" Height="34" Width="69"/>
-        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Height="326" Margin="195,0,154,-126" VerticalAlignment="Bottom" Width="581">
-            <Image x:Name="userCard1" AllowDrop="True"  HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Source="/Client;component/Img/cards/diamond/q.png" RenderTransformOrigin="0.5,0.5" Margin="34,0,0,0" MouseLeftButtonDown="userCard1_MouseLeftButtonDown">
+        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Height="326" Margin="179,0,170,-126" VerticalAlignment="Bottom" Width="581">
+            <Image x:Name="userCard1" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Source="/Client;component/Img/cards/diamond/q.png" RenderTransformOrigin="0.5,0.5" Margin="34,0,0,0">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -42,7 +42,7 @@
                     </TransformGroup>
                 </Image.RenderTransform>
             </Image>
-            <Image x:Name="userCard2" AllowDrop="True" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Source="/Client;component/Img/cards/spades/k.png" RenderTransformOrigin="0.5,0.5" Margin="-40,-33,0,0">
+            <Image x:Name="userCard2" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Source="/Client;component/Img/cards/spades/k.png" RenderTransformOrigin="0.5,0.5" Margin="-40,-33,0,0">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -95,11 +95,16 @@
                 </Image.RenderTransform>
             </Image>
         </StackPanel>
-        <StackPanel Grid.Column="1" AllowDrop="True" Orientation="Horizontal" HorizontalAlignment="Center" Height="138" Margin="274,292,256,0" VerticalAlignment="Top" Width="400">
-            <Image x:Name="boardCard1" Width="100" Drop="Image_Drop" Source="/Client;component/logo.ico" Stretch="Fill"/>
-            <Image Width="100" Source="/Client;component/logo.ico" Stretch="Fill"/>
-            <Image Width="100" Stretch="Fill" Source="/Client;component/logo.ico"/>
-            <Image Width="100" Source="/Client;component/logo.ico" Stretch="Fill"/>
+        <StackPanel Grid.Column="1" AllowDrop="True" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Height="138" Margin="274,289,256,293" Width="400">
+            <Image x:Name="boardCard1" Width="100" Stretch="Fill" Source="/Client;component/logo.ico"/>
+            <Image x:Name="boardCard2" Width="100" Stretch="Fill" Source="/Client;component/logo.ico"/>
+            <Image x:Name="boardCard3" Width="100" Stretch="Fill" Source="/Client;component/logo.ico"/>
+            <Image x:Name="boardCard4" Width="100" Stretch="Fill" Source="/Client;component/logo.ico"/>
         </StackPanel>
+        <Image Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Height="138" Margin="28,289,0,293" Width="142" Source="/Client;component/Img/Users/User1.png" Stretch="Fill"/>
+        <Image Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="138" Margin="0,289,28,293" Width="142" Source="/Client;component/Img/Users/User3.png" Stretch="Fill"/>
+        <Image Grid.Column="1" HorizontalAlignment="Center" Height="138" Margin="402,32,386,0" VerticalAlignment="Top" Width="142" Source="/Client;component/Img/Users/User2.png" Stretch="Fill"/>
+        <Image Grid.Column="1" HorizontalAlignment="Right" Height="182" Margin="760,10,10,0" VerticalAlignment="Top" Width="160" Source="/Client;component/Img/cards/spades/10.png"/>
+        <Label Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Margin="0,197,10,0" VerticalAlignment="Top" Width="124" Height="39"/>
     </Grid>
 </Window>

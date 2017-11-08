@@ -19,8 +19,11 @@ namespace Client.Windows
     /// </summary>
     public partial class Lobby : Window
     {
+        private static Lobby instance;
+        public static Lobby Instance { get => instance; set => instance = value; }
         public Lobby()
         {
+            instance = this;
             InitializeComponent();
         }
 

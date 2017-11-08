@@ -1,4 +1,5 @@
-﻿using Client.Windows;
+﻿using CardGameResources.Net;
+using Client.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,19 +22,32 @@ namespace Client
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static MainWindow instance;
+        public static MainWindow Instance { get => instance; set => instance = value; }
         public MainWindow()
         {
+            instance = this;
             InitializeComponent();
         }
 
         private void connectButton_Click(object sender, RoutedEventArgs e)
         {
-            Lobby main = new Lobby();
-            App.Current.MainWindow = main;
-            this.Close();
-            main.Show();
-            Network.Client.Instance.Start(GameClient.Instance.EntryPoint, ip_txtbox.Text, int.Parse(port_txtbox.Text));
-            GameClient.Instance.Name = name_txtbox.Text;
+            try
+            {
+                Network.Client.Instance.Start(GameClient.Instance.EntryPoint, ip_txtbox.Text, int.Parse(port_txtbox.Text));
+                GameClient.Instance.Name = name_txtbox.Text;
+                Network.Client.Instance.SendDataToServer(new Packet(name_txtbox.Text, PacketType.SYS, new Syscall(SysCommand.REGISTER, new List<string> { name_txtbox.Text })));
+                Lobby main = new Lobby();
+                App.Current.MainWindow = main;
+                this.Close();
+                main.Show();
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show("Cannot connect to the specified host!");
+                Console.Error.WriteLine(exc.Message);
+                return;
+            }
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
