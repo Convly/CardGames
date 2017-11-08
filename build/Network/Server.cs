@@ -156,20 +156,26 @@ namespace Network
             int     clientPort = int.Parse(connection.ConnectionInfo.RemoteEndPoint.ToString().Split(':').Last());
             dynamic dataObject = JsonConvert.DeserializeObject<dynamic>(data);
 
-            if (!Server.Instance.Clients.ContainsKey(dataObject.Name.ToString()))
+            bool reg = dataObject.Registration;
+
+            if (reg)
             {
-                InfosClient infosClient = new InfosClient()
+                if (!Server.Instance.Clients.ContainsKey(dataObject.Name.ToString()))
                 {
-                    _ip = clientIP,
-                    _port = clientPort
-                };
-                Server.Instance.Clients.Add(dataObject.Name.ToString(), infosClient);
-                CallBackFct(dataObject);
+                    InfosClient infosClient = new InfosClient()
+                    {
+                        _ip = clientIP,
+                        _port = clientPort
+                    };
+                    Server.Instance.Clients.Add(dataObject.Name.ToString(), infosClient);
+                }
+                else
+                {
+                    NetworkComms.SendObject("Message", clientIP, clientPort, "Error: Name already exist");
+                    return;
+                }
             }
-            else
-            {
-                NetworkComms.SendObject("Message", clientIP, clientPort, "Error: Name already exist");
-            }
+            CallBackFct(dataObject);
         }
     }
 }

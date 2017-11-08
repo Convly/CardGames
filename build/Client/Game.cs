@@ -175,7 +175,6 @@ namespace Client
                             GameBoard.Instance.player4_trump_img.Visibility = Visibility.Visible;
                             break;
                     }
-                    GameBoard.Instance.player2_trump_img.Visibility = Visibility.Visible;
                     break;
                 case GameAction.S_REQUEST_TRUMP_FROM:
                     KeyValuePair<int, string> value = JsonConvert.DeserializeObject< KeyValuePair<int, string>>(game.Data.ToString());
