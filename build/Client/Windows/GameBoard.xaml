@@ -44,7 +44,7 @@
                     </TransformGroup>
                 </Image.RenderTransform>
             </Image>
-            <Image AllowDrop="True" x:Name="userCard2" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" RenderTransformOrigin="0.5,0.5" Margin="-40,-33,0,0">
+            <Image AllowDrop="True" x:Name="userCard2" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" RenderTransformOrigin="0.5,0.5" Margin="-40,-33,0,0" MouseLeftButtonDown="userCard2_MouseLeftButtonDown">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -54,7 +54,7 @@
                     </TransformGroup>
                 </Image.RenderTransform>
             </Image>
-            <Image AllowDrop="True" x:Name="userCard3" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-42,-54,0,0" RenderTransformOrigin="0.5,0.5">
+            <Image AllowDrop="True" x:Name="userCard3" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-42,-54,0,0" RenderTransformOrigin="0.5,0.5" MouseLeftButtonDown="userCard3_MouseLeftButtonDown">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -64,9 +64,9 @@
                     </TransformGroup>
                 </Image.RenderTransform>
             </Image>
-            <Image AllowDrop="True" x:Name="userCard4" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-45,-59,0,0"/>
-            <Image AllowDrop="True" x:Name="userCard5" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-35,-59,0,0"/>
-            <Image AllowDrop="True" x:Name="userCard6" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-42,-47,0,0" RenderTransformOrigin="0.5,0.5">
+            <Image AllowDrop="True" x:Name="userCard4" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-45,-59,0,0" MouseLeftButtonDown="userCard4_MouseLeftButtonDown"/>
+            <Image AllowDrop="True" x:Name="userCard5" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-35,-59,0,0" MouseLeftButtonDown="userCard5_MouseLeftButtonDown"/>
+            <Image AllowDrop="True" x:Name="userCard6" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-42,-47,0,0" RenderTransformOrigin="0.5,0.5" MouseLeftButtonDown="userCard6_MouseLeftButtonDown">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -76,7 +76,7 @@
                     </TransformGroup>
                 </Image.RenderTransform>
             </Image>
-            <Image AllowDrop="True" x:Name="userCard7" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-38,36,0,61" RenderTransformOrigin="0.5,0.5">
+            <Image AllowDrop="True" x:Name="userCard7" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-38,36,0,61" RenderTransformOrigin="0.5,0.5" MouseLeftButtonDown="userCard7_MouseLeftButtonDown">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -86,7 +86,7 @@
                     </TransformGroup>
                 </Image.RenderTransform>
             </Image>
-            <Image AllowDrop="True" x:Name="userCard8" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-43,8,0,0" RenderTransformOrigin="0.5,0.5">
+            <Image AllowDrop="True" x:Name="userCard8" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-43,8,0,0" RenderTransformOrigin="0.5,0.5" MouseLeftButtonDown="userCard8_MouseLeftButtonDown">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -99,7 +99,7 @@
         </StackPanel>
         <StackPanel x:Name="boardDeck_panel" Grid.Column="1" AllowDrop="True" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Height="138" Margin="274,289,256,293" Width="400">
             <Image AllowDrop="True" x:Name="boardCard1" Width="100" Stretch="Fill" Margin="0" Drop="boardCard1_Drop"/>
-            <Image AllowDrop="True" x:Name="boardCard2" Width="100" Stretch="Fill" Margin="4,0,0,0" Drop="boardCard2_Drop"/>
+            <Image AllowDrop="True" x:Name="boardCard2" Width="100" Stretch="Fill" Margin="4,0,0,0" Drop="boardCard2_Drop" Height="138"/>
             <Image AllowDrop="True" x:Name="boardCard3" Width="100" Stretch="Fill" Margin="4,0,0,0" Drop="boardCard3_Drop"/>
             <Image AllowDrop="True" x:Name="boardCard4" Width="100" Stretch="Fill" Margin="4,0,0,0" Drop="boardCard4_Drop"/>
         </StackPanel>
