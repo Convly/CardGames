@@ -53,16 +53,8 @@ namespace Client.Windows
             GameBoard.Instance.trumpAs_pnel.Visibility = Visibility.Hidden;
         }
 
-        private void userCard1_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            Image image = e.Source as Image;
-            DataObject data = new DataObject(typeof(ImageSource), image.Source);
-            DragDrop.DoDragDrop(image, data, DragDropEffects.All);
-        }
-
         private void boardCard1_Drop(object sender, DragEventArgs e)
         {
-
             Image imageControl = (Image)sender;
             if ((e.Data.GetData(typeof(ImageSource)) != null))
             {
@@ -77,17 +69,100 @@ namespace Client.Windows
 
         private void boardCard2_Drop(object sender, DragEventArgs e)
         {
-
+            Image imageControl = (Image)sender;
+            if ((e.Data.GetData(typeof(ImageSource)) != null))
+            {
+                ImageSource image = e.Data.GetData(typeof(ImageSource)) as ImageSource;
+                imageControl = new Image() { Width = 100, Height = 100, Source = image };
+                string[] splitedSrc = ((ImageSource)e.Data.GetData(typeof(ImageSource)) as BitmapImage).UriSource.OriginalString.Split('/');
+                string color = splitedSrc[splitedSrc.Count() - 2];
+                string value = splitedSrc[splitedSrc.Count() - 1].Split('.')[0];
+                Network.Client.Instance.SendDataToServer(new Packet(GameClient.Instance.Name, PacketType.GAME, new Gamecall(GameAction.C_PLAY_CARD, new Card(value[0], color))));
+            }
         }
 
         private void boardCard3_Drop(object sender, DragEventArgs e)
         {
-
+            Image imageControl = (Image)sender;
+            if ((e.Data.GetData(typeof(ImageSource)) != null))
+            {
+                ImageSource image = e.Data.GetData(typeof(ImageSource)) as ImageSource;
+                imageControl = new Image() { Width = 100, Height = 100, Source = image };
+                string[] splitedSrc = ((ImageSource)e.Data.GetData(typeof(ImageSource)) as BitmapImage).UriSource.OriginalString.Split('/');
+                string color = splitedSrc[splitedSrc.Count() - 2];
+                string value = splitedSrc[splitedSrc.Count() - 1].Split('.')[0];
+                Network.Client.Instance.SendDataToServer(new Packet(GameClient.Instance.Name, PacketType.GAME, new Gamecall(GameAction.C_PLAY_CARD, new Card(value[0], color))));
+            }
         }
 
         private void boardCard4_Drop(object sender, DragEventArgs e)
         {
+            Image imageControl = (Image)sender;
+            if ((e.Data.GetData(typeof(ImageSource)) != null))
+            {
+                ImageSource image = e.Data.GetData(typeof(ImageSource)) as ImageSource;
+                imageControl = new Image() { Width = 100, Height = 100, Source = image };
+                string[] splitedSrc = ((ImageSource)e.Data.GetData(typeof(ImageSource)) as BitmapImage).UriSource.OriginalString.Split('/');
+                string color = splitedSrc[splitedSrc.Count() - 2];
+                string value = splitedSrc[splitedSrc.Count() - 1].Split('.')[0];
+                Network.Client.Instance.SendDataToServer(new Packet(GameClient.Instance.Name, PacketType.GAME, new Gamecall(GameAction.C_PLAY_CARD, new Card(value[0], color))));
+            }
+        }
 
+        private void userCard1_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Image image = e.Source as Image;
+            DataObject data = new DataObject(typeof(ImageSource), image.Source);
+            DragDrop.DoDragDrop(image, data, DragDropEffects.All);
+        }
+
+        private void userCard2_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Image image = e.Source as Image;
+            DataObject data = new DataObject(typeof(ImageSource), image.Source);
+            DragDrop.DoDragDrop(image, data, DragDropEffects.All);
+        }
+
+        private void userCard3_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Image image = e.Source as Image;
+            DataObject data = new DataObject(typeof(ImageSource), image.Source);
+            DragDrop.DoDragDrop(image, data, DragDropEffects.All);
+        }
+
+        private void userCard4_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Image image = e.Source as Image;
+            DataObject data = new DataObject(typeof(ImageSource), image.Source);
+            DragDrop.DoDragDrop(image, data, DragDropEffects.All);
+        }
+
+        private void userCard5_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Image image = e.Source as Image;
+            DataObject data = new DataObject(typeof(ImageSource), image.Source);
+            DragDrop.DoDragDrop(image, data, DragDropEffects.All);
+        }
+
+        private void userCard6_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Image image = e.Source as Image;
+            DataObject data = new DataObject(typeof(ImageSource), image.Source);
+            DragDrop.DoDragDrop(image, data, DragDropEffects.All);
+        }
+
+        private void userCard7_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Image image = e.Source as Image;
+            DataObject data = new DataObject(typeof(ImageSource), image.Source);
+            DragDrop.DoDragDrop(image, data, DragDropEffects.All);
+        }
+
+        private void userCard8_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Image image = e.Source as Image;
+            DataObject data = new DataObject(typeof(ImageSource), image.Source);
+            DragDrop.DoDragDrop(image, data, DragDropEffects.All);
         }
     }
 }
