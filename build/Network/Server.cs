@@ -164,8 +164,12 @@ namespace Network
                     _port = clientPort
                 };
                 Server.Instance.Clients.Add(dataObject.Name.ToString(), infosClient);
+                CallBackFct(dataObject);
             }
-            CallBackFct(dataObject);
+            else
+            {
+                NetworkComms.SendObject("Message", clientIP, clientPort, "Error: Name already exist");
+            }
         }
     }
 }

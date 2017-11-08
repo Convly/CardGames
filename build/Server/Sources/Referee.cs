@@ -132,7 +132,7 @@ namespace Servers.Sources
 
             Network.Server.Instance.SendToAllClient(new Packet("ROOT", PacketType.ENV, new Envcall(EnvInfos.S_USER_LIST, clientList)));
 
-            if (Game.Users.Count() == 4)
+            if (Game.Users.Count() == 1)
             {
                 Console.WriteLine("Lets the hunger games begin!");
                 this.Game.StartGame();
