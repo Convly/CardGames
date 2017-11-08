@@ -33,8 +33,6 @@ namespace Servers.Sources
                     break;
                 case PacketType.GAME:
                     break;
-                case PacketType.API:
-                    break;
                 default:
                     break;
             }
@@ -53,15 +51,25 @@ namespace Servers.Sources
 
             switch (evt.Action)
             {
-                case GameAction.PLAY_CARD:
+                case GameAction.C_PLAY_CARD:
                     break;
-                case GameAction.TAKE_TRUMP:
+                case GameAction.C_TAKE_TRUMP:
                     break;
-                case GameAction.TAKE_TRUMP_AS:
+                case GameAction.C_TAKE_TRUMP_AS:
                     break;
-                case GameAction.SHOT_BELOT:
+                case GameAction.C_SHOT_BELOT:
                     break;
-                case GameAction.SHOT_REBELOT:
+                case GameAction.C_SHOT_REBELOT:
+                    break;
+                case GameAction.S_SET_USER_DECK:
+                    break;
+                case GameAction.S_SET_BOARD_DECK:
+                    break;
+                case GameAction.S_SET_LASTROUND_DECK:
+                    break;
+                case GameAction.S_SET_TRUMP:
+                    break;
+                case GameAction.S_REQUEST_TRUMP_FROM:
                     break;
                 default:
                     break;
@@ -72,6 +80,7 @@ namespace Servers.Sources
         /**
          * SYS FUNCTIONS
          */
+
         private void SysEntryPoint(Packet p)
         {
             Syscall evt = JsonConvert.DeserializeObject<Syscall>(p.Data.ToString());
@@ -80,37 +89,36 @@ namespace Servers.Sources
 
             switch (evt.Command)
             {
-                case SysCommand.REGISTER:
-                    this.Register(evt.Args);
+                case SysCommand.C_REGISTER:
+                    this.Register(p.Name, evt);
                     break;
-                case SysCommand.QUIT:
+                case SysCommand.C_QUIT:
+                    break;
+                case SysCommand.S_DISCONNECTED:
+                    break;
+                case SysCommand.S_CONNECTED:
                     break;
                 default:
                     break;
             }
         }
 
-        private bool CheckRegisterValidity(List<string> args)
+        private bool CheckRegisterValidity(string name)
         {
-            if (args.Count() != 1)
-            {
-                return false;
-            }
-
             if (Game.Users.Count() >= 4)
             {
-                Network.Server.Instance.sendDataToClient(args.ElementAt(0), new Packet("ROOT", PacketType.ERR, new Errcall(Err.SERVER_FULL, "The server is already full. Please, try again later.")));
+                Network.Server.Instance.sendDataToClient(name, new Packet("ROOT", PacketType.ERR, new Errcall(Err.SERVER_FULL, "The server is already full. Please, try again later.")));
                 return false;
             }
             return true;
         }
 
-        private bool Register(List<string> args)
+        private bool Register(string name, Syscall evt)
         {
-            if (!this.CheckRegisterValidity(args))
+            if (!this.CheckRegisterValidity(name))
                 return false;
 
-            this.Game.Users.Add(args.ElementAt(0));
+            this.Game.Users.Add(name);
 
             List<string> clientList = new List<string> { };
             foreach (var user in Network.Server.Instance.Clients)
@@ -118,7 +126,7 @@ namespace Servers.Sources
                 clientList.Add(user.Key);
             }
 
-            Network.Server.Instance.SendToAllClient(new Packet("ROOT", PacketType.ENV, new Envcall(EnvInfos.USER_LIST, clientList)));
+            Network.Server.Instance.SendToAllClient(new Packet("ROOT", PacketType.ENV, new Envcall(EnvInfos.S_USER_LIST, clientList)));
 
             if (Game.Users.Count() == 4)
             {
