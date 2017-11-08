@@ -22,10 +22,10 @@
             <Label VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="43" Content="Last lap" FontSize="24"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontWeight="Bold"/>
         </StackPanel>
         <StackPanel x:Name="lastLap_img_panel" Orientation="Horizontal" Margin="0,48,0,0" VerticalAlignment="Top" Height="122">
-            <Image  Height="105" Width="71" Source="/Client;component/logo.ico" Stretch="Fill" VerticalAlignment="Top" Margin="25,10,4,0"/>
-            <Image Height="105" Width="71" Source="/Client;component/logo.ico" Stretch="Fill" VerticalAlignment="Top" Margin="0,10,4,0"/>
-            <Image Height="105" Width="71" Source="/Client;component/logo.ico" Stretch="Fill" VerticalAlignment="Top" Margin="0,10,4,0"/>
-            <Image Height="105" Width="71" Source="/Client;component/logo.ico" Stretch="Fill" VerticalAlignment="Top" Margin="0,10,4,0"/>
+            <Image  Height="105" Width="71" Source="/Client;component/Img/cards/back.png" Stretch="Fill" VerticalAlignment="Top" Margin="25,10,4,0"/>
+            <Image Height="105" Width="71" Source="/Client;component/Img/cards/back.png" Stretch="Fill" VerticalAlignment="Top" Margin="0,10,4,0"/>
+            <Image Height="105" Width="71" Source="/Client;component/Img/cards/back.png" Stretch="Fill" VerticalAlignment="Top" Margin="0,10,4,0"/>
+            <Image Height="105" Width="71" Source="/Client;component/Img/cards/back.png" Stretch="Fill" VerticalAlignment="Top" Margin="0,10,4,0"/>
         </StackPanel>
         <StackPanel x:Name="lastLap_labl_panel" Orientation="Horizontal" Margin="26,170,25,0" VerticalAlignment="Top" Height="48">
             <Label Content="Label" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,4,0" VerticalAlignment="Top" Width="71" Height="34"/>
@@ -98,10 +98,10 @@
             </Image>
         </StackPanel>
         <StackPanel x:Name="boardDeck_panel" Grid.Column="1" AllowDrop="True" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Height="138" Margin="274,289,256,293" Width="400">
-            <Image x:Name="boardCard1" Width="100" Stretch="Fill" Source="/Client;component/logo.ico"/>
-            <Image x:Name="boardCard2" Width="100" Stretch="Fill" Source="/Client;component/logo.ico"/>
-            <Image x:Name="boardCard3" Width="100" Stretch="Fill" Source="/Client;component/logo.ico"/>
-            <Image x:Name="boardCard4" Width="100" Stretch="Fill" Source="/Client;component/logo.ico"/>
+            <Image x:Name="boardCard1" Width="100" Stretch="Fill" Source="/Client;component/Img/cards/back.png" Margin="0"/>
+            <Image x:Name="boardCard2" Width="100" Stretch="Fill" Source="/Client;component/Img/cards/back.png" Margin="4,0,0,0"/>
+            <Image x:Name="boardCard3" Width="100" Stretch="Fill" Source="/Client;component/Img/cards/back.png" Margin="4,0,0,0"/>
+            <Image x:Name="boardCard4" Width="100" Stretch="Fill" Source="/Client;component/Img/cards/back.png" Margin="4,0,0,0"/>
         </StackPanel>
         <Image Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Height="138" Margin="28,289,0,293" Width="142" Source="/Client;component/Img/Users/User1.png" Stretch="Fill"/>
         <Image Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="138" Margin="0,289,28,293" Width="142" Source="/Client;component/Img/Users/User3.png" Stretch="Fill"/>
@@ -116,15 +116,15 @@
         <Image x:Name="player3_trump_img" Grid.Column="1" HorizontalAlignment="Left" Height="41" Margin="544,170,0,0" VerticalAlignment="Top" Width="34" Source="/Client;component/Img/trump.png" Visibility="Hidden"/>
         <Image x:Name="player4_trump_img" Grid.Column="1" HorizontalAlignment="Left" Height="41" Margin="726,427,0,0" VerticalAlignment="Top" Width="34" Source="/Client;component/Img/trump.png" Visibility="Hidden"/>
 
-        <StackPanel x:Name="trumpAs_pnel" Grid.Column="1" AllowDrop="True" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Height="47" Margin="336,337,310,336" Width="284" Visibility="Hidden">
-            <ComboBox x:Name="trumColor_combobox" Grid.Column="1" HorizontalAlignment="Center" Height="24" VerticalAlignment="Bottom" Width="285" SelectedIndex="0">
+        <StackPanel x:Name="trumpAs_pnel" Grid.Column="1" AllowDrop="True" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Height="47" Margin="239,338,407,335" Width="284" Visibility="Hidden">
+            <ComboBox x:Name="trumColor_combobox" HorizontalAlignment="Center" Height="24" VerticalAlignment="Bottom" Width="282" SelectedIndex="0">
                 <ComboBoxItem Content="diamond"/>
                 <ComboBoxItem Content="spades"/>
                 <ComboBoxItem Content="hearts"/>
                 <ComboBoxItem Content="clubs"/>
             </ComboBox>
-            <Button Content="Take" VerticalAlignment="Top" Width="140" Height="24" HorizontalAlignment="Center" Margin="-429,0,0,0" Click="Button_Click"/>
-            <Button Content="Pass" Grid.Column="1" VerticalAlignment="Top" Width="146" Height="24" Margin="-145,0,0,0" HorizontalAlignment="Center" Click="Button_Click_1"/>
+            <Button Content="Take" VerticalAlignment="Top" Width="136" Height="24" HorizontalAlignment="Center" Margin="-429,0,0,0" Click="Button_Click"/>
+            <Button Content="Pass" Grid.Column="1" VerticalAlignment="Top" Width="144" Height="24" Margin="-145,0,0,0" HorizontalAlignment="Center" Click="Button_Click_1"/>
         </StackPanel>
     </Grid>
 </Window>
