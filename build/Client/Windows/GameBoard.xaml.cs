@@ -1,4 +1,5 @@
-﻿using CardGameResources.Net;
+﻿using CardGameResources.Game;
+using CardGameResources.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,9 +28,9 @@ namespace Client.Windows
             instance = this;
             InitializeComponent();
             GameClient gameClient = GameClient.Instance;
-            player2.Content = gameClient.UsersList.ElementAt((gameClient.UsersList.FindIndex(gameClient.Name.StartsWith) + 3) % 4);
-            player3.Content = gameClient.UsersList.ElementAt((gameClient.UsersList.FindIndex(gameClient.Name.StartsWith) + 1) % 4);
-            player4.Content = gameClient.UsersList.ElementAt((gameClient.UsersList.FindIndex(gameClient.Name.StartsWith) + 2) % 4);
+            player2.Content = gameClient.UsersList.ElementAt((gameClient.UsersList.FindIndex(gameClient.Name.StartsWith) + 1) % 4);
+            player3.Content = gameClient.UsersList.ElementAt((gameClient.UsersList.FindIndex(gameClient.Name.StartsWith) + 2) % 4);
+            player4.Content = gameClient.UsersList.ElementAt((gameClient.UsersList.FindIndex(gameClient.Name.StartsWith) + 3) % 4);
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -50,6 +51,43 @@ namespace Client.Windows
         {
             Network.Client.Instance.SendDataToServer(new Packet(GameClient.Instance.Name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP_AS, null)));
             GameBoard.Instance.trumpAs_pnel.Visibility = Visibility.Hidden;
+        }
+
+        private void userCard1_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Image image = e.Source as Image;
+            DataObject data = new DataObject(typeof(ImageSource), image.Source);
+            DragDrop.DoDragDrop(image, data, DragDropEffects.All);
+        }
+
+        private void boardCard1_Drop(object sender, DragEventArgs e)
+        {
+
+            Image imageControl = (Image)sender;
+            if ((e.Data.GetData(typeof(ImageSource)) != null))
+            {
+                ImageSource image = e.Data.GetData(typeof(ImageSource)) as ImageSource;
+                imageControl = new Image() { Width = 100, Height = 100, Source = image };
+                string[] splitedSrc = ((ImageSource)e.Data.GetData(typeof(ImageSource)) as BitmapImage).UriSource.OriginalString.Split('/');
+                string color = splitedSrc[splitedSrc.Count() - 2];
+                string value = splitedSrc[splitedSrc.Count() - 1].Split('.')[0];
+                Network.Client.Instance.SendDataToServer(new Packet(GameClient.Instance.Name, PacketType.GAME, new Gamecall(GameAction.C_PLAY_CARD, new Card(value[0], color))));
+            }
+        }
+
+        private void boardCard2_Drop(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void boardCard3_Drop(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void boardCard4_Drop(object sender, DragEventArgs e)
+        {
+
         }
     }
 }
