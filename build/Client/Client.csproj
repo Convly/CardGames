@@ -159,7 +159,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Img\cards\clubs\10.png" />
+    <Resource Include="Img\cards\clubs\t.png" />
     <Resource Include="Img\cards\clubs\2.png" />
     <Resource Include="Img\cards\clubs\3.png" />
     <Resource Include="Img\cards\clubs\4.png" />
@@ -172,7 +172,7 @@
     <Resource Include="Img\cards\clubs\j.png" />
     <Resource Include="Img\cards\clubs\k.png" />
     <Resource Include="Img\cards\clubs\q.png" />
-    <Resource Include="Img\cards\diamond\10.png" />
+    <Resource Include="Img\cards\diamond\t.png" />
     <Resource Include="Img\cards\diamond\2.png" />
     <Resource Include="Img\cards\diamond\3.png" />
     <Resource Include="Img\cards\diamond\4.png" />
@@ -185,7 +185,7 @@
     <Resource Include="Img\cards\diamond\j.png" />
     <Resource Include="Img\cards\diamond\k.png" />
     <Resource Include="Img\cards\diamond\q.png" />
-    <Resource Include="Img\cards\hearts\10.png" />
+    <Resource Include="Img\cards\hearts\t.png" />
     <Resource Include="Img\cards\hearts\2.png" />
     <Resource Include="Img\cards\hearts\3.png" />
     <Resource Include="Img\cards\hearts\4.png" />
@@ -198,7 +198,7 @@
     <Resource Include="Img\cards\hearts\j.png" />
     <Resource Include="Img\cards\hearts\k.png" />
     <Resource Include="Img\cards\hearts\q.png" />
-    <Resource Include="Img\cards\spades\10.png" />
+    <Resource Include="Img\cards\spades\t.png" />
     <Resource Include="Img\cards\spades\2.png" />
     <Resource Include="Img\cards\spades\3.png" />
     <Resource Include="Img\cards\spades\4.png" />

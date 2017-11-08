@@ -8,26 +8,19 @@ namespace CardGameResources.Game
 {
     public class Deck
     {
-        private int size;
         private List<Card> array;
 
-        public Deck(int size_)
+        public Deck()
         {
-            this.Size = size_;
         }
 
-        public Deck(int size_, List<Card> array_)
+        public Deck(List<Card> array_)
         {
-            this.Size = size_;
             this.Array = array_;
         }
 
         public bool Add(Card card_)
         {
-            if (this.Array.Count() >= this.Size)
-            {
-                return false;
-            }
             this.Array.Add(card_);
             return true;
         }
@@ -58,7 +51,6 @@ namespace CardGameResources.Game
             return this.Remove(old) && this.Add(dst);
         }
 
-        public int Size { get => size; set => size = value; }
         public List<Card> Array { get => array; set => array = value; }
     }
 }
