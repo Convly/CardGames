@@ -40,7 +40,7 @@ namespace Network
             }
         }
 
-        private string _serverIP;
+        private string _serverIP = null;
         private int _serverPort;
 
         public static Func<Object, int> CallBackFct;
@@ -55,11 +55,14 @@ namespace Network
         {
             try
             {
-                _serverIP = serverIP;
-                _serverPort = serverPort;
-                CallBackFct = callBackFct;
-                NetworkComms.AppendGlobalIncomingPacketHandler<string>("Message", ClientRequest);
-                Connection.StartListening(ConnectionType.TCP, new System.Net.IPEndPoint(System.Net.IPAddress.Any, 0));
+                if (_serverIP == null)
+                {
+                    _serverIP = serverIP;
+                    _serverPort = serverPort;
+                    CallBackFct = callBackFct;
+                    NetworkComms.AppendGlobalIncomingPacketHandler<string>("Message", ClientRequest);
+                    Connection.StartListening(ConnectionType.TCP, new System.Net.IPEndPoint(System.Net.IPAddress.Any, 0));
+                }
             }
             catch (Exception e)
             {
@@ -84,8 +87,15 @@ namespace Network
         /// <param name="data">Data send by the server</param>
         public static void ClientRequest(PacketHeader header, Connection connection, string data)
         {
-            dynamic dataObject = JsonConvert.DeserializeObject<dynamic>(data);
-            CallBackFct(dataObject);
+            if (data.ToString().StartsWith("Error:"))
+            {
+                CallBackFct(data.ToString());
+            }
+            else
+            {
+                dynamic dataObject = JsonConvert.DeserializeObject<dynamic>(data);
+                CallBackFct(dataObject);
+            }
         }
     }
 }

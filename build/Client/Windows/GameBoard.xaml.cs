@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CardGameResources.Net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,6 +38,18 @@ namespace Client.Windows
             {
                 Close();
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Network.Client.Instance.SendDataToServer(new Packet(GameClient.Instance.Name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP_AS, GameBoard.Instance.trumColor_combobox.Text)));
+            GameBoard.Instance.trumpAs_pnel.Visibility = Visibility.Hidden;
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            Network.Client.Instance.SendDataToServer(new Packet(GameClient.Instance.Name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP_AS, null)));
+            GameBoard.Instance.trumpAs_pnel.Visibility = Visibility.Hidden;
         }
     }
 }

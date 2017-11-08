@@ -21,16 +21,18 @@
         <StackPanel Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Stretch">
             <Label VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="43" Content="Last lap" FontSize="24"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontWeight="Bold"/>
         </StackPanel>
-        <StackPanel x:Name="rankLastLapBox" Orientation="Horizontal" Margin="0,55,0,0" VerticalAlignment="Top">
-            <Image Height="105" Width="71" Source="/Client;component/logo.ico" Stretch="Fill" VerticalAlignment="Top" Margin="25,10,4,0"/>
+        <StackPanel x:Name="lastLap_img_panel" Orientation="Horizontal" Margin="0,48,0,0" VerticalAlignment="Top" Height="122">
+            <Image  Height="105" Width="71" Source="/Client;component/logo.ico" Stretch="Fill" VerticalAlignment="Top" Margin="25,10,4,0"/>
             <Image Height="105" Width="71" Source="/Client;component/logo.ico" Stretch="Fill" VerticalAlignment="Top" Margin="0,10,4,0"/>
             <Image Height="105" Width="71" Source="/Client;component/logo.ico" Stretch="Fill" VerticalAlignment="Top" Margin="0,10,4,0"/>
             <Image Height="105" Width="71" Source="/Client;component/logo.ico" Stretch="Fill" VerticalAlignment="Top" Margin="0,10,4,0"/>
         </StackPanel>
-        <Label Content="Label" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="25,176,0,0" VerticalAlignment="Top" Width="71" Height="34"/>
-        <Label Content="Label" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="101,176,0,0" VerticalAlignment="Top" RenderTransformOrigin="2.981,1.688" Height="34" Width="70"/>
-        <Label Content="Label" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="176,176,0,0" VerticalAlignment="Top" RenderTransformOrigin="4.308,0.525" Height="34" Width="70"/>
-        <Label Content="Label" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="251,176,0,0" VerticalAlignment="Top" RenderTransformOrigin="6.218,0.68" Height="34" Width="69"/>
+        <StackPanel x:Name="lastLap_labl_panel" Orientation="Horizontal" Margin="26,170,25,0" VerticalAlignment="Top" Height="48">
+            <Label Content="Label" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,4,0" VerticalAlignment="Top" Width="71" Height="34"/>
+            <Label Content="Label" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,4,0" VerticalAlignment="Top" RenderTransformOrigin="2.981,1.688" Height="34" Width="70"/>
+            <Label Content="Label" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,4,0" VerticalAlignment="Top" RenderTransformOrigin="4.308,0.525" Height="34" Width="70"/>
+            <Label Content="Label" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,4,0" VerticalAlignment="Top" RenderTransformOrigin="6.218,0.68" Height="34" Width="69"/>
+        </StackPanel>
         <StackPanel x:Name="userDeck_panel" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Height="326" Margin="179,0,170,-126" VerticalAlignment="Bottom" Width="581">
             <Image x:Name="userCard1" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" RenderTransformOrigin="0.5,0.5" Margin="34,0,0,0">
                 <Image.RenderTransform>
@@ -95,7 +97,7 @@
                 </Image.RenderTransform>
             </Image>
         </StackPanel>
-        <StackPanel Grid.Column="1" AllowDrop="True" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Height="138" Margin="274,289,256,293" Width="400">
+        <StackPanel x:Name="boardDeck_panel" Grid.Column="1" AllowDrop="True" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Height="138" Margin="274,289,256,293" Width="400">
             <Image x:Name="boardCard1" Width="100" Stretch="Fill" Source="/Client;component/logo.ico"/>
             <Image x:Name="boardCard2" Width="100" Stretch="Fill" Source="/Client;component/logo.ico"/>
             <Image x:Name="boardCard3" Width="100" Stretch="Fill" Source="/Client;component/logo.ico"/>
@@ -104,10 +106,25 @@
         <Image Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Height="138" Margin="28,289,0,293" Width="142" Source="/Client;component/Img/Users/User1.png" Stretch="Fill"/>
         <Image Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="138" Margin="0,289,28,293" Width="142" Source="/Client;component/Img/Users/User3.png" Stretch="Fill"/>
         <Image Grid.Column="1" HorizontalAlignment="Center" Height="138" Margin="402,32,386,0" VerticalAlignment="Top" Width="142" Source="/Client;component/Img/Users/User2.png" Stretch="Fill"/>
-        <Image Grid.Column="1" HorizontalAlignment="Right" Height="182" Margin="0,10,10,0" VerticalAlignment="Top" Width="124" Source="/Client;component/Img/cards/spades/10.png" Stretch="Fill"/>
-        <Label Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Margin="0,197,10,0" VerticalAlignment="Top" Width="124" Height="39"/>
+        <Image x:Name="trump_img" Grid.Column="1" HorizontalAlignment="Right" Height="182" Margin="0,10,10,0" VerticalAlignment="Top" Width="124" Source="" Stretch="Fill"/>
+        <Label x:Name="trump_labl" Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Margin="0,197,10,0" VerticalAlignment="Top" Width="124" Height="39"/>
         <Label x:Name="player2" Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="28,432,0,246" VerticalAlignment="Center" Width="142" Height="42"/>
         <Label x:Name="player4" Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Margin="402,176,386,0" VerticalAlignment="Top" Width="142" Height="42"/>
         <Label x:Name="player3" Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Margin="0,432,28,246" VerticalAlignment="Center" Width="142" Height="42"/>
+        <Image x:Name="player1_trump_img" Grid.Column="1" HorizontalAlignment="Left" Height="41" Margin="136,622,0,0" VerticalAlignment="Top" Width="34" Source="/Client;component/Img/trump.png" Visibility="Hidden"/>
+        <Image x:Name="player2_trump_img" Grid.Column="1" HorizontalAlignment="Left" Height="41" Margin="170,427,0,0" VerticalAlignment="Top" Width="34" Source="/Client;component/Img/trump.png" Visibility="Hidden"/>
+        <Image x:Name="player3_trump_img" Grid.Column="1" HorizontalAlignment="Left" Height="41" Margin="544,170,0,0" VerticalAlignment="Top" Width="34" Source="/Client;component/Img/trump.png" Visibility="Hidden"/>
+        <Image x:Name="player4_trump_img" Grid.Column="1" HorizontalAlignment="Left" Height="41" Margin="726,427,0,0" VerticalAlignment="Top" Width="34" Source="/Client;component/Img/trump.png" Visibility="Hidden"/>
+
+        <StackPanel x:Name="trumpAs_pnel" Grid.Column="1" AllowDrop="True" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Height="47" Margin="336,337,310,336" Width="284" Visibility="Hidden">
+            <ComboBox x:Name="trumColor_combobox" Grid.Column="1" HorizontalAlignment="Center" Height="24" VerticalAlignment="Bottom" Width="285" SelectedIndex="0">
+                <ComboBoxItem Content="diamond"/>
+                <ComboBoxItem Content="spades"/>
+                <ComboBoxItem Content="hearts"/>
+                <ComboBoxItem Content="clubs"/>
+            </ComboBox>
+            <Button Content="Take" VerticalAlignment="Top" Width="140" Height="24" HorizontalAlignment="Center" Margin="-429,0,0,0" Click="Button_Click"/>
+            <Button Content="Pass" Grid.Column="1" VerticalAlignment="Top" Width="146" Height="24" Margin="-145,0,0,0" HorizontalAlignment="Center" Click="Button_Click_1"/>
+        </StackPanel>
     </Grid>
 </Window>
