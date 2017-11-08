@@ -96,7 +96,7 @@ namespace Client
                     scoreTeam2 = score.ElementAt(1);
                     break;
                 case EnvInfos.S_SET_TOUR:
-                    userWhoPlay = JsonConvert.DeserializeObject<string>(ev.Data.ToString());
+                    userWhoPlay = ev.Data.ToString();
                     break;
                 case EnvInfos.S_SET_REMAINING_TIME:
 
@@ -182,16 +182,30 @@ namespace Client
                     MessageBoxResult result = MessageBox.Show("Do you wanna do something?", "", MessageBoxButton.YesNo);
                     if (result == MessageBoxResult.Yes)
                     {
-                        Network.Client.Instance.SendDataToServer(new Packet(name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP, true)));
-                        Network.Client.Instance.SendDataToServer(new Packet(name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP_AS, true)));
+                        if (value.Key == 2)
+                        {
+                            GameBoard.Instance.trumpAs_pnel.Visibility = Visibility.Visible;
+                        }
+                        else
+                        {
+                            Network.Client.Instance.SendDataToServer(new Packet(name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP, true)));
+                        }
                     }
                     else if (result == MessageBoxResult.No)
                     {
-                        Network.Client.Instance.SendDataToServer(new Packet(name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP, false)));
+                        if (value.Key == 2)
+                        {
+                            Network.Client.Instance.SendDataToServer(new Packet(name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP_AS, null)));
+                        }
+                        else
+                        {
+                            Network.Client.Instance.SendDataToServer(new Packet(name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP, false)));
+                        }
                     }
                     break;
             }
         }
+
         public void SysEntryPoint(Packet data)
         {
             Syscall sys = JsonConvert.DeserializeObject<Syscall>(data.Data.ToString());
