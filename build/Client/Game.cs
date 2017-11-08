@@ -159,26 +159,26 @@ namespace Client
                     trump = JsonConvert.DeserializeObject<TrumpInfos>(game.Data.ToString());
                     GameBoard.Instance.trump_img.Source = new BitmapImage(new Uri(String.Format("/Client;component/Img/cards/" + trump.Card.Color + "/" + trump.Card.Value.ToString() + ".png"), UriKind.Relative));
                     GameBoard.Instance.trump_labl.Content = trump.RealColor;
-                    int index = (UsersList.FindIndex(Name.StartsWith) + usersList.FindIndex(trump.Owner.StartsWith)) % 4;
-                    switch (index)
+                    if (trump.Owner == GameBoard.Instance.player2.Content.ToString())
                     {
-                        case 0:
-                            GameBoard.Instance.player1_trump_img.Visibility = Visibility.Visible;
-                            break;
-                        case 1:
-                            GameBoard.Instance.player2_trump_img.Visibility = Visibility.Visible;
-                            break;
-                        case 2:
-                            GameBoard.Instance.player3_trump_img.Visibility = Visibility.Visible;
-                            break;
-                        case 3:
-                            GameBoard.Instance.player4_trump_img.Visibility = Visibility.Visible;
-                            break;
+                        GameBoard.Instance.player2_trump_img.Visibility = Visibility.Visible;
+                    }
+                    else if (trump.Owner == GameBoard.Instance.player3.Content.ToString())
+                    {
+                        GameBoard.Instance.player3_trump_img.Visibility = Visibility.Visible;
+                    }
+                    else if (trump.Owner == GameBoard.Instance.player4.Content.ToString())
+                    {
+                        GameBoard.Instance.player4_trump_img.Visibility = Visibility.Visible;
+                    }
+                    else if (trump.Owner == name)
+                    {
+                        GameBoard.Instance.player1_trump_img.Visibility = Visibility.Visible;
                     }
                     break;
                 case GameAction.S_REQUEST_TRUMP_FROM:
                     KeyValuePair<int, string> value = JsonConvert.DeserializeObject< KeyValuePair<int, string>>(game.Data.ToString());
-                    MessageBoxResult result = MessageBox.Show("Do you wanna do something?", "", MessageBoxButton.YesNo);
+                    MessageBoxResult result = MessageBox.Show("Do you want to take the trump?", "", MessageBoxButton.YesNo);
                     if (result == MessageBoxResult.Yes)
                     {
                         if (value.Key == 2)

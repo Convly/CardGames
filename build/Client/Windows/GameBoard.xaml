@@ -34,7 +34,7 @@
             <Label Content="Label" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,4,0" VerticalAlignment="Top" RenderTransformOrigin="6.218,0.68" Height="34" Width="69"/>
         </StackPanel>
         <StackPanel x:Name="userDeck_panel" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Height="326" Margin="179,0,170,-126" VerticalAlignment="Bottom" Width="581">
-            <Image x:Name="userCard1" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" RenderTransformOrigin="0.5,0.5" Margin="34,0,0,0">
+            <Image AllowDrop="True" x:Name="userCard1" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" RenderTransformOrigin="0.5,0.5" Margin="34,0,0,0" MouseLeftButtonDown="userCard1_MouseLeftButtonDown">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -44,7 +44,7 @@
                     </TransformGroup>
                 </Image.RenderTransform>
             </Image>
-            <Image x:Name="userCard2" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" RenderTransformOrigin="0.5,0.5" Margin="-40,-33,0,0">
+            <Image AllowDrop="True" x:Name="userCard2" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" RenderTransformOrigin="0.5,0.5" Margin="-40,-33,0,0">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -54,7 +54,7 @@
                     </TransformGroup>
                 </Image.RenderTransform>
             </Image>
-            <Image x:Name="userCard3" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-42,-54,0,0" RenderTransformOrigin="0.5,0.5">
+            <Image AllowDrop="True" x:Name="userCard3" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-42,-54,0,0" RenderTransformOrigin="0.5,0.5">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -64,9 +64,9 @@
                     </TransformGroup>
                 </Image.RenderTransform>
             </Image>
-            <Image x:Name="userCard4" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-45,-59,0,0"/>
-            <Image x:Name="userCard5" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-35,-59,0,0"/>
-            <Image x:Name="userCard6" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-42,-47,0,0" RenderTransformOrigin="0.5,0.5">
+            <Image AllowDrop="True" x:Name="userCard4" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-45,-59,0,0"/>
+            <Image AllowDrop="True" x:Name="userCard5" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-35,-59,0,0"/>
+            <Image AllowDrop="True" x:Name="userCard6" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-42,-47,0,0" RenderTransformOrigin="0.5,0.5">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -76,7 +76,7 @@
                     </TransformGroup>
                 </Image.RenderTransform>
             </Image>
-            <Image x:Name="userCard7" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-38,36,0,61" RenderTransformOrigin="0.5,0.5">
+            <Image AllowDrop="True" x:Name="userCard7" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-38,36,0,61" RenderTransformOrigin="0.5,0.5">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -86,7 +86,7 @@
                     </TransformGroup>
                 </Image.RenderTransform>
             </Image>
-            <Image x:Name="userCard8" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-43,8,0,0" RenderTransformOrigin="0.5,0.5">
+            <Image AllowDrop="True" x:Name="userCard8" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" Margin="-43,8,0,0" RenderTransformOrigin="0.5,0.5">
                 <Image.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform/>
@@ -98,10 +98,10 @@
             </Image>
         </StackPanel>
         <StackPanel x:Name="boardDeck_panel" Grid.Column="1" AllowDrop="True" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Height="138" Margin="274,289,256,293" Width="400">
-            <Image x:Name="boardCard1" Width="100" Stretch="Fill" Source="/Client;component/Img/cards/back.png" Margin="0"/>
-            <Image x:Name="boardCard2" Width="100" Stretch="Fill" Source="/Client;component/Img/cards/back.png" Margin="4,0,0,0"/>
-            <Image x:Name="boardCard3" Width="100" Stretch="Fill" Source="/Client;component/Img/cards/back.png" Margin="4,0,0,0"/>
-            <Image x:Name="boardCard4" Width="100" Stretch="Fill" Source="/Client;component/Img/cards/back.png" Margin="4,0,0,0"/>
+            <Image AllowDrop="True" x:Name="boardCard1" Width="100" Stretch="Fill" Margin="0" Drop="boardCard1_Drop"/>
+            <Image AllowDrop="True" x:Name="boardCard2" Width="100" Stretch="Fill" Margin="4,0,0,0" Drop="boardCard2_Drop"/>
+            <Image AllowDrop="True" x:Name="boardCard3" Width="100" Stretch="Fill" Margin="4,0,0,0" Drop="boardCard3_Drop"/>
+            <Image AllowDrop="True" x:Name="boardCard4" Width="100" Stretch="Fill" Margin="4,0,0,0" Drop="boardCard4_Drop"/>
         </StackPanel>
         <Image Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Height="138" Margin="28,289,0,293" Width="142" Source="/Client;component/Img/Users/User1.png" Stretch="Fill"/>
         <Image Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="138" Margin="0,289,28,293" Width="142" Source="/Client;component/Img/Users/User3.png" Stretch="Fill"/>
@@ -109,12 +109,12 @@
         <Image x:Name="trump_img" Grid.Column="1" HorizontalAlignment="Right" Height="182" Margin="0,10,10,0" VerticalAlignment="Top" Width="124" Source="" Stretch="Fill"/>
         <Label x:Name="trump_labl" Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Margin="0,197,10,0" VerticalAlignment="Top" Width="124" Height="39"/>
         <Label x:Name="player2" Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="28,432,0,246" VerticalAlignment="Center" Width="142" Height="42"/>
-        <Label x:Name="player4" Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Margin="402,176,386,0" VerticalAlignment="Top" Width="142" Height="42"/>
-        <Label x:Name="player3" Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Margin="0,432,28,246" VerticalAlignment="Center" Width="142" Height="42"/>
-        <Image x:Name="player1_trump_img" Grid.Column="1" HorizontalAlignment="Left" Height="41" Margin="136,622,0,0" VerticalAlignment="Top" Width="34" Source="/Client;component/Img/trump.png" Visibility="Hidden"/>
-        <Image x:Name="player2_trump_img" Grid.Column="1" HorizontalAlignment="Left" Height="41" Margin="170,427,0,0" VerticalAlignment="Top" Width="34" Source="/Client;component/Img/trump.png" Visibility="Hidden"/>
-        <Image x:Name="player3_trump_img" Grid.Column="1" HorizontalAlignment="Left" Height="41" Margin="544,170,0,0" VerticalAlignment="Top" Width="34" Source="/Client;component/Img/trump.png" Visibility="Hidden"/>
-        <Image x:Name="player4_trump_img" Grid.Column="1" HorizontalAlignment="Left" Height="41" Margin="726,427,0,0" VerticalAlignment="Top" Width="34" Source="/Client;component/Img/trump.png" Visibility="Hidden"/>
+        <Label x:Name="player3" Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Margin="402,176,386,0" VerticalAlignment="Top" Width="142" Height="42"/>
+        <Label x:Name="player4" Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Margin="0,432,28,246" VerticalAlignment="Center" Width="142" Height="42"/>
+        <Image x:Name="player1_trump_img" Grid.Column="1" Height="42" Margin="133,640,760,-90" Width="34" Source="/Client;component/Img/trump.png" RenderTransformOrigin="-7.294,0.341" Visibility="Hidden"/>
+        <Image x:Name="player2_trump_img" Grid.Column="1" Height="41" Margin="179,427,0,252" Width="34" Source="/Client;component/Img/trump.png" RenderTransformOrigin="0.882,-2.634" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Hidden"/>
+        <Image x:Name="player3_trump_img" Grid.Column="1" Height="41" Margin="544,-158,352,503" Width="34" Source="/Client;component/Img/trump.png" Visibility="Hidden"/>
+        <Image x:Name="player4_trump_img" Grid.Column="1" Height="41" Margin="1056,427,-160,252" Width="34" Source="/Client;component/Img/trump.png" RenderTransformOrigin="0.765,0.341" Visibility="Hidden"/>
 
         <StackPanel x:Name="trumpAs_pnel" Grid.Column="1" AllowDrop="True" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Height="47" Margin="239,338,407,335" Width="284" Visibility="Hidden">
             <ComboBox x:Name="trumColor_combobox" HorizontalAlignment="Center" Height="24" VerticalAlignment="Bottom" Width="282" SelectedIndex="0">
