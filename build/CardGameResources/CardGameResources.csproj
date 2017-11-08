@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Game\Card.cs" />
     <Compile Include="Game\Deck.cs" />
+    <Compile Include="Game\TrumpInfos.cs" />
     <Compile Include="Net\Envcall.cs" />
     <Compile Include="Net\Errcall.cs" />
     <Compile Include="Net\Gamecall.cs" />

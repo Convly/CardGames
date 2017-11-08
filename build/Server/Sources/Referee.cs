@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CardGameResources.Net;
 using Network;
+using System.Threading;
 
 namespace Servers.Sources
 {
@@ -119,6 +120,9 @@ namespace Servers.Sources
                 return false;
 
             this.Game.Users.Add(name);
+            Network.Server.Instance.sendDataToClient(name, new Packet("root", PacketType.SYS, new Syscall(SysCommand.S_CONNECTED, null)));
+
+            Thread.Sleep(500);
 
             List<string> clientList = new List<string> { };
             foreach (var user in Network.Server.Instance.Clients)

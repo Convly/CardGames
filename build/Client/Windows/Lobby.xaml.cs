@@ -27,18 +27,6 @@ namespace Client.Windows
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            progress.Value += 25;
-            if (progress.Value == 100)
-            {
-                GameBoard board = new GameBoard();
-                App.Current.MainWindow = board;
-                this.Close();
-                board.Show();
-            }
-        }
-
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
