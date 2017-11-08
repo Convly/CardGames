@@ -19,9 +19,16 @@ namespace Client.Windows
     /// </summary>
     public partial class GameBoard : Window
     {
+        private static GameBoard instance;
+        public static GameBoard Instance { get => instance; set => instance = value; }
         public GameBoard()
         {
+            instance = this;
             InitializeComponent();
+            GameClient gameClient = GameClient.Instance;
+            player2.Content = gameClient.UsersList.ElementAt((gameClient.UsersList.FindIndex(gameClient.Name.StartsWith) + 3) % 4);
+            player3.Content = gameClient.UsersList.ElementAt((gameClient.UsersList.FindIndex(gameClient.Name.StartsWith) + 1) % 4);
+            player4.Content = gameClient.UsersList.ElementAt((gameClient.UsersList.FindIndex(gameClient.Name.StartsWith) + 2) % 4);
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -29,24 +36,6 @@ namespace Client.Windows
             if (e.Key == Key.Escape)
             {
                 Close();
-            }
-        }
-
-        private void userCard1_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            Image image = e.Source as Image;
-            DataObject data = new DataObject(typeof(ImageSource), image.Source);
-            DragDrop.DoDragDrop(image, data, DragDropEffects.All);
-        }
-
-        private void Image_Drop(object sender, DragEventArgs e)
-        {
-            Image imageControl = (Image)sender;
-            if ((e.Data.GetData(typeof(ImageSource)) != null))
-            {
-                ImageSource image = e.Data.GetData(typeof(ImageSource)) as ImageSource;
-                imageControl = new Image() { Width = 100, Height = 100, Source = image };
-                boardCard1.Source = (ImageSource)e.Data.GetData(typeof(ImageSource));
             }
         }
     }
