@@ -36,11 +36,7 @@ namespace Client
             {
                 Network.Client.Instance.Start(GameClient.Instance.EntryPoint, ip_txtbox.Text, int.Parse(port_txtbox.Text));
                 GameClient.Instance.Name = name_txtbox.Text;
-                Network.Client.Instance.SendDataToServer(new Packet(name_txtbox.Text, PacketType.SYS, new Syscall(SysCommand.REGISTER, new List<string> { name_txtbox.Text })));
-                Lobby main = new Lobby();
-                App.Current.MainWindow = main;
-                this.Close();
-                main.Show();
+                Network.Client.Instance.SendDataToServer(new Packet(name_txtbox.Text, PacketType.SYS, new Syscall(SysCommand.C_REGISTER, new List<string> { name_txtbox.Text })));
             }
             catch (Exception exc)
             {

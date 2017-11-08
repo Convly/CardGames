@@ -104,7 +104,10 @@
         <Image Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Height="138" Margin="28,289,0,293" Width="142" Source="/Client;component/Img/Users/User1.png" Stretch="Fill"/>
         <Image Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="138" Margin="0,289,28,293" Width="142" Source="/Client;component/Img/Users/User3.png" Stretch="Fill"/>
         <Image Grid.Column="1" HorizontalAlignment="Center" Height="138" Margin="402,32,386,0" VerticalAlignment="Top" Width="142" Source="/Client;component/Img/Users/User2.png" Stretch="Fill"/>
-        <Image Grid.Column="1" HorizontalAlignment="Right" Height="182" Margin="760,10,10,0" VerticalAlignment="Top" Width="160" Source="/Client;component/Img/cards/spades/10.png"/>
+        <Image Grid.Column="1" HorizontalAlignment="Right" Height="182" Margin="0,10,10,0" VerticalAlignment="Top" Width="124" Source="/Client;component/Img/cards/spades/10.png" Stretch="Fill"/>
         <Label Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Margin="0,197,10,0" VerticalAlignment="Top" Width="124" Height="39"/>
+        <Label x:Name="player2" Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="28,432,0,246" VerticalAlignment="Center" Width="142" Height="42"/>
+        <Label x:Name="player4" Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Margin="402,176,386,0" VerticalAlignment="Top" Width="142" Height="42"/>
+        <Label x:Name="player3" Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Margin="0,432,28,246" VerticalAlignment="Center" Width="142" Height="42"/>
     </Grid>
 </Window>
