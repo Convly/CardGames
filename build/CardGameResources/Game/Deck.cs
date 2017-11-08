@@ -25,6 +25,11 @@ namespace CardGameResources.Game
             return true;
         }
 
+        public void Clear()
+        {
+            this.Array.Clear();
+        }
+
         public bool Remove(int index)
         {
             if (index >= this.Array.Count())

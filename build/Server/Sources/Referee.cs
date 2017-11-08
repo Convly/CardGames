@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CardGameResources.Net;
 using Network;
 using System.Threading;
+using CardGameResources.Game;
 
 namespace Servers.Sources
 {
@@ -54,6 +55,8 @@ namespace Servers.Sources
             switch (evt.Action)
             {
                 case GameAction.C_PLAY_CARD:
+                    Card card = JsonConvert.DeserializeObject<Card>(evt.Data.ToString());
+                    this.Game.PlayCard_callback(p.Name, card);
                     break;
                 case GameAction.C_TAKE_TRUMP:
                     bool takeTrumpAnswer = Convert.ToBoolean(evt.Data.ToString());

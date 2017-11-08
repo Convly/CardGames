@@ -82,6 +82,23 @@ namespace Servers.Sources
             }
         }
 
+        private void FillUserDeck()
+        {
+            Random random = new Random();
+            foreach (string username in this.Users)
+            {
+                while (this.UsersDeck[username].Array.Count() < 8 && masterCopy.Array.Count() > 0)
+                {
+                    int index = random.Next(0, masterCopy.Array.Count());
+                    Card card = masterCopy.Array.ElementAt(index);
+                    this.UsersDeck[username].Add(card);
+                    Console.WriteLine("Adding new card in the " + username + "'s deck: " + card.Value + ":" + card.Color + ". (" + masterCopy.Array.Count() + " left in the deck)");
+                    masterCopy.Remove(index);
+                }
+                Network.Server.Instance.sendDataToClient(username, new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[username])));
+            }
+        }
+
         private void TrumpDecision()
         {
             Console.WriteLine("About to choose what'll be the potential trump...");
@@ -193,6 +210,13 @@ namespace Servers.Sources
                 while (this.TakeTrumpAs_lock) ;
         }
 
+        private void AssignTrump(string name, string color)
+        {
+            this.TrumpInfos.Owner = name;
+            this.TrumpInfos.RealColor = color;
+            this.UsersDeck[name].Add(this.TrumpInfos.Card);
+        }
+
         public void TakeTrump_callback(string name, bool ans)
         {
             Console.WriteLine("Got Take trump: " + ans + " for " + name);
@@ -202,8 +226,7 @@ namespace Servers.Sources
 
             if (ans)
             {
-                this.TrumpInfos.Owner = name;
-                this.TrumpInfos.RealColor = this.TrumpInfos.Card.Color;
+                this.AssignTrump(name, this.TrumpInfos.RealColor);
                 this.TrumpPhase_lock = false;
                 Console.WriteLine("Trump updated, exiting phase...");
             }
@@ -220,8 +243,7 @@ namespace Servers.Sources
 
             if (color != null && this.Colors.Contains(color))
             {
-                this.TrumpInfos.Owner = name;
-                this.TrumpInfos.RealColor = color;
+                this.AssignTrump(name, color);
                 this.TrumpPhase_lock = false;
                 Console.WriteLine("Trump updated, exiting phase...");
             }
@@ -231,10 +253,14 @@ namespace Servers.Sources
 
         private bool PlayPhase()
         {
+            this.FillUserDeck();
             Console.WriteLine("Game Phase");
             this.PlayPhase_lock = true;
-            while (this.PlayPhase_lock && (this.Points.ElementAt(0).Array.Count() + this.Points.ElementAt(1).Array.Count()) < this.masterDeck.Array.Count())
+            while (this.PlayPhase_lock)
             {
+                this.LastRound.Clear();
+                this.BoardDeck.Clear();
+                Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, this.BoardDeck)));
                 foreach (var user in this.Users)
                 {
                     Console.WriteLine("New turn for " + user);
@@ -243,6 +269,7 @@ namespace Servers.Sources
                     Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.ENV, new Envcall(EnvInfos.S_SET_TOUR, user)));
                     while (this.GamePlayTurn_lock) ;
                 }
+                Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_LASTROUND_DECK, this.LastRound)));
             }
             return true;
         }
@@ -287,6 +314,7 @@ namespace Servers.Sources
         {
             this.UsersDeck[name].Remove(card);
             this.BoardDeck.Add(card);
+            this.LastRound.Add(name, card);
             Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, this.BoardDeck)));
             Network.Server.Instance.sendDataToClient(name, new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[name])));
             this.GamePlayTurn_lock = false;
@@ -297,8 +325,8 @@ namespace Servers.Sources
             if (name != this.CurrentPlayerName)
                 return;
 
-            if (this.UsersDeck[name].Array.Contains(card))
-            {
+            //if (this.UsersDeck[name].Array.Contains(card))
+            //{
                 // Get main color if it exists
                 string color = card.Color;
                 if (this.BoardDeck.Array.Count() > 0)
@@ -332,12 +360,6 @@ namespace Servers.Sources
                         break;
                 }
             }
-        }
-
-        /**
-         * 
-         * RULES
-         * 
-         */
+       // }
     }
 }

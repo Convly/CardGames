@@ -127,7 +127,7 @@ namespace Client
                     for (int i = 0; i < 4; ++i)
                     {
                         Image image = GameBoard.Instance.boardDeck_panel.Children[i] as Image;
-                        image.Source = new BitmapImage(new Uri(String.Format(""), UriKind.Relative));
+                        image.Source = new BitmapImage(new Uri(String.Format("/Client;component/Img/cards/back.png"), UriKind.Relative));
                     }
                     for (int i = 0; i < boardDeck.Array.Count() && i < 4; ++i)
                     {
