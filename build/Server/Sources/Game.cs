@@ -15,10 +15,18 @@ namespace Servers.Sources
         private Dictionary<string, int> teams = new Dictionary<string, int> { };
         private Deck masterDeck = new Deck();
         private Deck masterCopy = new Deck();
+        private Deck boardDeck = new Deck();
         private Dictionary<string, Deck> usersDeck = new Dictionary<string, Deck> { };
         private TrumpInfos trumpInfos = null;
         private Dictionary<string, Card> lastRound = new Dictionary<string, Card>();
         private string currentPlayerName = "";
+        private List<String> colors = new List<string> { "clubs", "diamond", "hearts", "spades" };
+        private List<int> scores = new List<int> { 0, 0 };
+        private List<Deck> points = new List<Deck> { new Deck(), new Deck()};
+        // States
+        private bool locker = false;
+        private bool trumpPhase_lock = false;
+        private bool playPhase_lock = false;
 
         public List<string> Users { get => users; set => users = value; }
         public Dictionary<string, int> Teams { get => teams; set => teams = value; }
@@ -26,6 +34,13 @@ namespace Servers.Sources
         public TrumpInfos TrumpInfos { get => trumpInfos; set => trumpInfos = value; }
         public string CurrentPlayerName { get => currentPlayerName; set => currentPlayerName = value; }
         public Dictionary<string, Card> LastRound { get => lastRound; set => lastRound = value; }
+        public bool TrumpPhase_lock { get => trumpPhase_lock; set => trumpPhase_lock = value; }
+        public bool Locker { get => locker; set => locker = value; }
+        public List<string> Colors { get => colors; set => colors = value; }
+        public bool PlayPhase_lock { get => playPhase_lock; set => playPhase_lock = value; }
+        public List<int> Scores { get => scores; set => scores = value; }
+        public List<Deck> Points { get => points; set => points = value; }
+        public Deck BoardDeck { get => boardDeck; set => boardDeck = value; }
 
         public Game()
         {
@@ -33,7 +48,7 @@ namespace Servers.Sources
 
         private void InitMasterDeck()
         {
-            foreach (string color in new List<String> { "clubs", "diamond", "hearts", "spades" })
+            foreach (string color in this.Colors)
             {
                 foreach (char c in "789tjqka")
                 {
@@ -87,6 +102,8 @@ namespace Servers.Sources
 
         private void Run()
         {
+            this.TrumpPhase();
+            this.PlayPhase();
             Console.WriteLine("Run");
         }
 
@@ -119,15 +136,108 @@ namespace Servers.Sources
 
         /**
          * 
-         * SYS 
+         * GAME 
          * 
          */
 
-        //private void SetRemainingTime(Func<Object, int> callback, int duration)
-        //{
-        //    Timer t = new Timer(new TimerCallback(callback));
-        //    t.Start();
-        //}
+        private bool TrumpPhase()
+        {
+            this.TrumpPhase_lock = true;
+            int phase = 1;
+            Console.WriteLine("Trump Phase");
+            while (trumpPhase_lock && phase <= 2)
+            {
+                Console.WriteLine("Turn " + phase);
+                foreach (var user in this.Users)
+                {
+                    Console.WriteLine("New turn for " + user);
+                    this.Locker = true;
+                    this.CurrentPlayerName = user;
+                    Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.ENV, new Envcall(EnvInfos.S_SET_TOUR, user)));
+                    Network.Server.Instance.sendDataToClient(user, new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_REQUEST_TRUMP_FROM, new KeyValuePair<int, string>(phase, user))));
+                    while (Locker) ;
+                    if (this.TrumpInfos.Owner != null)
+                        break;
+                }
+                phase++;
+            }
+            Console.WriteLine("Exiting Trump phase at turn " + phase);
+            if (this.TrumpPhase_lock)
+            {
+                Console.WriteLine("Abort Game");
+                return false;
+            }
+            Console.WriteLine("Launch Game!");
+            Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_TRUMP, this.TrumpInfos)));
+            return true;
+        }
+
+        public void TakeTrump_callback(string name, bool ans)
+        {
+            Console.WriteLine("Got Take trump: " + ans + " for " + name);
+
+            if (name != this.CurrentPlayerName)
+                return;
+
+            if (ans)
+            {
+                this.TrumpInfos.Owner = name;
+                this.TrumpInfos.RealColor = this.TrumpInfos.Card.Color;
+                this.TrumpPhase_lock = false;
+                Console.WriteLine("Trump updated, exiting phase...");
+            }
+
+            this.Locker = false;
+        }
+
+        public void TakeTrumpAs_callback(string name, string color)
+        {
+            Console.WriteLine("Got Take trump as : " + color + " for " + name);
+
+            if (name != this.CurrentPlayerName)
+                return;
+
+            if (color != null && this.Colors.Contains(color))
+            {
+                this.TrumpInfos.Owner = name;
+                this.TrumpInfos.RealColor = color;
+                this.TrumpPhase_lock = false;
+                Console.WriteLine("Trump updated, exiting phase...");
+            }
+
+            this.Locker = false;
+        }
+
+        private bool PlayPhase()
+        {
+            Console.WriteLine("Game Phase");
+            this.PlayPhase_lock = true;
+            while (this.PlayPhase_lock && (this.Points.ElementAt(0).Array.Count() + this.Points.ElementAt(1).Array.Count()) < this.masterDeck.Array.Count())
+            {
+                foreach (var user in this.Users)
+                {
+                    this.Locker = true;
+                    this.CurrentPlayerName = user;
+                    Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.ENV, new Envcall(EnvInfos.S_SET_TOUR, user)));
+                    while (Locker) ;
+                }
+            }
+            return true;
+        }
+
+        public void PlayCard_callback(string name, Card card)
+        {
+            if (name != this.CurrentPlayerName)
+                return;
+
+            // TODO: CHECK RULES
+            if (this.UsersDeck[name].Array.Contains(card))
+            {
+                this.UsersDeck[name].Remove(card);
+                //this.
+                this.Locker = false;
+            }
+        }
 
         /**
          * 

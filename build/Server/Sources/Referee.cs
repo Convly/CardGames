@@ -33,6 +33,7 @@ namespace Servers.Sources
                     this.SysEntryPoint(p);
                     break;
                 case PacketType.GAME:
+                    this.GameEntryPoint(p);
                     break;
                 default:
                     break;
@@ -55,22 +56,16 @@ namespace Servers.Sources
                 case GameAction.C_PLAY_CARD:
                     break;
                 case GameAction.C_TAKE_TRUMP:
+                    bool takeTrumpAnswer = Convert.ToBoolean(evt.Data.ToString());
+                    this.Game.TakeTrump_callback(p.Name, takeTrumpAnswer);
                     break;
                 case GameAction.C_TAKE_TRUMP_AS:
+                    string takeTrumpAsAnswer = (evt.Data != null) ? evt.Data.ToString() : null;
+                    this.Game.TakeTrumpAs_callback(p.Name, takeTrumpAsAnswer);
                     break;
                 case GameAction.C_SHOT_BELOT:
                     break;
                 case GameAction.C_SHOT_REBELOT:
-                    break;
-                case GameAction.S_SET_USER_DECK:
-                    break;
-                case GameAction.S_SET_BOARD_DECK:
-                    break;
-                case GameAction.S_SET_LASTROUND_DECK:
-                    break;
-                case GameAction.S_SET_TRUMP:
-                    break;
-                case GameAction.S_REQUEST_TRUMP_FROM:
                     break;
                 default:
                     break;
@@ -94,10 +89,6 @@ namespace Servers.Sources
                     this.Register(p.Name, evt);
                     break;
                 case SysCommand.C_QUIT:
-                    break;
-                case SysCommand.S_DISCONNECTED:
-                    break;
-                case SysCommand.S_CONNECTED:
                     break;
                 default:
                     break;
