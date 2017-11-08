@@ -90,6 +90,20 @@ namespace Network
             return _serverIP + ":" + _serverPort;
         }
 
+        public bool DeleteClient(string name)
+        {
+            try
+            {
+                clients.Remove(name);
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.Message);
+                return false;
+            }
+            return true;
+        }
+
         /// <summary>
         /// Send an object to a client
         /// </summary>
@@ -98,12 +112,21 @@ namespace Network
         /// <returns></returns>
         public bool sendDataToClient(string name, Object data)
         {
-            InfosClient value;
-            if (!Clients.TryGetValue(name, out value))
+            try
             {
+                InfosClient value;
+                if (!Clients.TryGetValue(name, out value))
+                {
+                    return false;
+                }
+                NetworkComms.SendObject("Message", value._ip, value._port, JsonConvert.SerializeObject(data));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.Message);
+                DeleteClient(name);
                 return false;
             }
-            NetworkComms.SendObject("Message", value._ip, value._port, JsonConvert.SerializeObject(data));
             return true;
         }
 
@@ -116,8 +139,7 @@ namespace Network
         {
             foreach (var user in this.Clients)
             {
-                InfosClient value = user.Value;
-                NetworkComms.SendObject("Message", value._ip, value._port, JsonConvert.SerializeObject(data));
+                sendDataToClient(user.Key, data);
             }
             return true;
         }
