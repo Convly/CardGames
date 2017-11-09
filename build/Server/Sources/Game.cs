@@ -81,6 +81,53 @@ namespace Servers.Sources
             return (card.Color == this.TrumpInfos.RealColor) ? TrumpCardValues[card.Value] : BasicCardValues[card.Value];
         }
 
+        private int GetCardPoints(Card card)
+        {
+            if (card == null)
+                return 0;
+            return (card.Color == this.TrumpInfos.RealColor) ? TrumpCardPoints[card.Value] : BasicCardPoints[card.Value];
+        }
+
+        private string CheckDeckWinner()
+        {
+            string mainColor = this.LastRound[this.CurrentPlayerName].Color;
+            string tcolor = this.TrumpInfos.RealColor;
+            KeyValuePair<string, Card> maxItem = new KeyValuePair<string, Card>("", this.TrumpInfos.Card);
+            int score = 0;
+            foreach (var item in this.LastRound)
+            {
+                if (maxItem.Key == "" || (
+                    (item.Value.Color == maxItem.Value.Color && this.GetCardValue(item.Value) > this.GetCardValue(maxItem.Value))
+                    || (item.Value.Color == tcolor && maxItem.Value.Color != tcolor)
+                    || (item.Value.Color == tcolor && maxItem.Value.Color == tcolor && this.GetCardValue(item.Value) > this.GetCardValue(maxItem.Value))))
+                {
+                    maxItem = item;
+                }
+                score += this.GetCardPoints(item.Value);
+            }
+            int team = this.Teams[maxItem.Key];
+            this.Scores[team] += score;
+            this.Send(PacketType.ENV, new Envcall(EnvInfos.S_SCORES, this.Scores));
+            Console.WriteLine(maxItem.Key + " won this lap with " + score + " points");
+            Console.WriteLine("Team 1 : " + this.Scores.ElementAt(0) + " - " + this.Scores.ElementAt(1) + " : Team 2");
+            return maxItem.Key;
+        }
+
+        private List<string> GetUserListFrom(string begin)
+        {
+            Console.WriteLine("Generating new user list where root is" + begin);
+            List<string> list = new List<string>();
+            List<string> tpUser = this.Users;
+            tpUser.Reverse();
+            int beginIndex = tpUser.FindIndex(begin.StartsWith);
+            for (int i = 0; i < 4; ++i)
+            {
+                list.Add(tpUser.ElementAt((beginIndex + i) % 4));
+                Console.WriteLine("-> " + list.ElementAt(i));
+            }
+            return list;
+        }
+
         /**
          * 
          * GAME INIT
@@ -105,6 +152,7 @@ namespace Servers.Sources
             this.Send(PacketType.ENV, new Envcall(EnvInfos.S_SET_TEAM, this.Teams));
             this.GiveCards();
             this.TrumpDecision();
+            this.Send(PacketType.ENV, new Envcall(EnvInfos.S_SCORES, this.Scores));
         }
 
         private void InitMasterDeck()
@@ -257,12 +305,14 @@ namespace Servers.Sources
             this.FillUserDeck();
             Console.WriteLine("Game Phase");
             this.PlayPhase_lock = true;
+            this.CurrentPlayerName = this.Users.ElementAt(0);
             while (this.PlayPhase_lock)
             {
                 this.LastRound.Clear();
                 this.BoardDeck.Clear();
                 this.Send(PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, this.BoardDeck));
-                foreach (var user in this.Users)
+                List<string> roundUserList = this.GetUserListFrom(this.CurrentPlayerName);
+                foreach (var user in roundUserList)
                 {
                     Console.WriteLine("New turn for " + user);
                     this.GamePlayTurn_lock = true;
@@ -270,6 +320,7 @@ namespace Servers.Sources
                     this.Send(PacketType.ENV, new Envcall(EnvInfos.S_SET_TOUR, user));
                     while (this.GamePlayTurn_lock) ;
                 }
+                this.CurrentPlayerName = this.CheckDeckWinner();
                 this.Send(PacketType.GAME, new Gamecall(GameAction.S_SET_LASTROUND_DECK, this.LastRound));
             }
             return true;
@@ -371,15 +422,40 @@ namespace Servers.Sources
          * 
          */
 
-        private bool Send(string name, PacketType type, Object data)
+        private void ReplacePlayer(string name)
         {
-            Network.Server.Instance.sendDataToClient(name, new Packet("root", type, data));
+            Console.WriteLine("Connection lost for " + name);
+        }
+
+        public bool Send(string name, PacketType type, Object data)
+        {
+            try
+            {
+                Network.Server.Instance.sendDataToClient(name, new Packet("root", type, data));
+            }
+            catch (Exception err)
+            {
+                Console.WriteLine(err.Message);
+                this.ReplacePlayer(name);
+            }
             return true;
         }
 
-        private bool Send(PacketType type, Object data)
+        public bool Send(PacketType type, Object data)
         {
-            Network.Server.Instance.SendToAllClient(new Packet("root", type, data));
+            try
+            {
+                foreach (var username in this.Users)
+                {
+                    Network.Server.Instance.sendDataToClient(username, new Packet("root", type, data));
+                }
+                
+            }
+            catch (Exception err)
+            {
+                Console.WriteLine(err.Message);
+
+            }
             return true;
         }
 
@@ -408,6 +484,9 @@ namespace Servers.Sources
         // Cards values
         private Dictionary<char, int> basicCardValues = new Dictionary<char, int> { { '7', 1 }, { '8', 2 }, { '9', 3 }, { 'j', 4 }, { 'q', 5 }, { 'k', 6 }, { 't', 7 }, { 'a', 8 } };
         private Dictionary<char, int> trumpCardValues = new Dictionary<char, int> { { '7', 1 }, { '8', 2 }, { 'q', 3 }, { 'k', 4 }, { 't', 5 }, { 'a', 6 }, { '9', 7 }, { 'j', 8 } };
+        // Cards Points
+        private Dictionary<char, int> basicCardPoints = new Dictionary<char, int> { { '7', 0 }, { '8', 0 }, { '9', 0 }, { 'j', 2 }, { 'q', 3 }, { 'k', 4 }, { 't', 10 }, { 'a', 11 } };
+        private Dictionary<char, int> trumpCardPoints = new Dictionary<char, int> { { '7', 0 }, { '8', 0 }, { 'q', 3 }, { 'k', 4 }, { 't', 10 }, { 'a', 11 }, { '9', 14 }, { 'j', 20 } };
         // States
         private bool takeTrump_lock = false;
         private bool takeTrumpAs_lock = false;
@@ -433,5 +512,7 @@ namespace Servers.Sources
         public bool PlayPhase_lock { get => playPhase_lock; set => playPhase_lock = value; }
         public Dictionary<char, int> TrumpCardValues { get => trumpCardValues; set => trumpCardValues = value; }
         public Dictionary<char, int> BasicCardValues { get => basicCardValues; set => basicCardValues = value; }
+        public Dictionary<char, int> BasicCardPoints { get => basicCardPoints; set => basicCardPoints = value; }
+        public Dictionary<char, int> TrumpCardPoints { get => trumpCardPoints; set => trumpCardPoints = value; }
     }
 }

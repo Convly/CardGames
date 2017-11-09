@@ -131,20 +131,6 @@ namespace Network
         }
 
         /// <summary>
-        /// Send an object to all client
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public bool SendToAllClient(Object data)
-        {
-            foreach (var user in this.Clients)
-            {
-                sendDataToClient(user.Key, data);
-            }
-            return true;
-        }
-
-        /// <summary>
         /// Function trigered by the server when the client send a request
         /// </summary>
         /// <param name="header"></param>

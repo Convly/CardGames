@@ -101,8 +101,10 @@
             <Image AllowDrop="True" x:Name="boardCard1" Width="100" Stretch="Fill" Margin="0" Drop="boardCard1_Drop" MinWidth="100" Height="138" MinHeight="138"/>
             <Image AllowDrop="True" x:Name="boardCard2" Width="100" Stretch="Fill" Margin="4,0,0,0" Drop="boardCard2_Drop" Height="138" MinWidth="100" MinHeight="138"/>
             <Image AllowDrop="True" x:Name="boardCard3" Width="100" Stretch="Fill" Margin="4,0,0,0" Drop="boardCard3_Drop" Height="138" MinWidth="100" MinHeight="138"/>
-                <Image AllowDrop="True" x:Name="boardCard4" Width="100" Stretch="Fill" Margin="4,0,0,0" Drop="boardCard4_Drop" Height="138" MinWidth="100" MinHeight="138"/>
+            <Image AllowDrop="True" x:Name="boardCard4" Width="100" Stretch="Fill" Margin="4,0,0,0" Drop="boardCard4_Drop" Height="138" MinWidth="100" MinHeight="138"/>
         </StackPanel>
+        <Label x:Name="labelScoreTeam1" Content="Player1 / Player3:     0" Grid.Column="1" HorizontalAlignment="Left" Margin="10,434,0,0" VerticalAlignment="Top" Width="466" FontSize="18" HorizontalContentAlignment="Right"/>
+        <Label x:Name="labelScoreTeam2" Content="0     :Player2 / Player4" Grid.Column="1" HorizontalAlignment="Left" Margin="481,434,0,0" VerticalAlignment="Top" Width="449" HorizontalContentAlignment="Left" FontSize="18"/>
         <Image Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Height="138" Margin="28,289,0,293" Width="142" Source="/Client;component/Img/Users/User1.png" Stretch="Fill"/>
         <Image Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="138" Margin="0,289,28,293" Width="142" Source="/Client;component/Img/Users/User3.png" Stretch="Fill"/>
         <Image Grid.Column="1" HorizontalAlignment="Center" Height="138" Margin="402,32,386,0" VerticalAlignment="Top" Width="142" Source="/Client;component/Img/Users/User2.png" Stretch="Fill"/>

@@ -17,11 +17,18 @@ namespace Servers.Sources
 
         internal Game Game { get => game; set => game = value; }
 
+        /// <summary>
+        /// Default constructor for Referee Object
+        /// </summary>
         public Referee()
         {
             this.Game = new Game();
         }
 
+        /// <summary>
+        /// This method is triggered when the server receive an object. It Will redirect the object trhough the different routes
+        /// </summary>
+        /// <param name="Obj"></param>
         public int EntryPoint(Object obj)
         {
             Packet p = JsonConvert.DeserializeObject<Packet>(obj.ToString());
@@ -46,6 +53,10 @@ namespace Servers.Sources
          * GAME FUNCTIONS
          */
 
+        /// <summary>
+        /// This function is cqlled by the main entry point when the received object is of type "GAME"
+        /// </summary>
+        /// <param name="p"></param>
         private void GameEntryPoint(Packet p)
         {
             Gamecall evt = JsonConvert.DeserializeObject<Gamecall>(p.Data.ToString());
@@ -80,6 +91,10 @@ namespace Servers.Sources
          * SYS FUNCTIONS
          */
 
+        /// <summary>
+        /// This function is cqlled by the main entry point when the received object is of type "SYS"
+        /// </summary>
+        /// <param name="p"></param>
         private void SysEntryPoint(Packet p)
         {
             Syscall evt = JsonConvert.DeserializeObject<Syscall>(p.Data.ToString());
@@ -98,6 +113,10 @@ namespace Servers.Sources
             }
         }
 
+        /// <summary>
+        /// Check if the user can register to the server
+        /// </summary>
+        /// <param name="name"></param>
         private bool CheckRegisterValidity(string name)
         {
             if (Game.Users.Count() >= 4)
@@ -108,6 +127,11 @@ namespace Servers.Sources
             return true;
         }
 
+        /// <summary>
+        /// Try to register a user into the server. If the server is full, it'll start the game.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="evt"></param>
         private bool Register(string name, Syscall evt)
         {
             if (!this.CheckRegisterValidity(name))
@@ -124,7 +148,7 @@ namespace Servers.Sources
                 clientList.Add(user.Key);
             }
 
-            Network.Server.Instance.SendToAllClient(new Packet("ROOT", PacketType.ENV, new Envcall(EnvInfos.S_USER_LIST, clientList)));
+            this.Game.Send(PacketType.ENV, new Envcall(EnvInfos.S_USER_LIST, clientList));
 
             if (Game.Users.Count() == 4)
             {

@@ -92,8 +92,10 @@ namespace Client
                     break;
                 case EnvInfos.S_SCORES:
                     List<int> score = JsonConvert.DeserializeObject<List<int>>(ev.Data.ToString());
-                    scoreTeam1 = score.ElementAt(0);
-                    scoreTeam2 = score.ElementAt(1);
+                    this.scoreTeam1 = score.ElementAt(0);
+                    this.scoreTeam2 = score.ElementAt(1);
+                    GameBoard.Instance.labelScoreTeam1.Content = this.UsersList.ElementAt(0) + " / " + this.UsersList.ElementAt(2) + ": " + this.scoreTeam1;
+                    GameBoard.Instance.labelScoreTeam2.Content = this.UsersList.ElementAt(1) + " / " + this.UsersList.ElementAt(3) + ": " + this.scoreTeam2;
                     break;
                 case EnvInfos.S_SET_TOUR:
                     userWhoPlay = ev.Data.ToString();
