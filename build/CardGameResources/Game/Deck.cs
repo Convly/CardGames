@@ -40,8 +40,30 @@ namespace CardGameResources.Game
             return true;
         }
 
+        public bool Contains(Card card)
+        {
+            foreach (var c in this.Array)
+            {
+                if (c.Color == card.Color && c.Value == card.Value)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public bool Remove(Card card)
         {
+            int x = 0;
+            foreach (var c in this.Array)
+            {
+                if (c.Color == card.Color && c.Value == card.Value)
+                {
+                    this.Array.RemoveAt(x);
+                    break;
+                }
+                ++x;
+            }
             this.Array.Remove(card);
             return true;
         }

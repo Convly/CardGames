@@ -11,44 +11,100 @@ namespace Servers.Sources
 {
     class Game
     {
-        private List<string> users = new List<string> { };
-        private Dictionary<string, int> teams = new Dictionary<string, int> { };
-        private Deck masterDeck = new Deck();
-        private Deck masterCopy = new Deck();
-        private Deck boardDeck = new Deck();
-        private Dictionary<string, Deck> usersDeck = new Dictionary<string, Deck> { };
-        private TrumpInfos trumpInfos = null;
-        private Dictionary<string, Card> lastRound = new Dictionary<string, Card>();
-        private string currentPlayerName = "";
-        private List<String> colors = new List<string> { "clubs", "diamond", "hearts", "spades" };
-        private List<int> scores = new List<int> { 0, 0 };
-        private List<Deck> points = new List<Deck> { new Deck(), new Deck()};
-        // States
-        private bool takeTrump_lock = false;
-        private bool takeTrumpAs_lock = false;
-        private bool gamePlayTurn_lock = false;
-        private bool trumpPhase_lock = false;
-        private bool playPhase_lock = false;
-
-        public List<string> Users { get => users; set => users = value; }
-        public Dictionary<string, int> Teams { get => teams; set => teams = value; }
-        public Dictionary<string, Deck> UsersDeck { get => usersDeck; set => usersDeck = value; }
-        public TrumpInfos TrumpInfos { get => trumpInfos; set => trumpInfos = value; }
-        public string CurrentPlayerName { get => currentPlayerName; set => currentPlayerName = value; }
-        public Dictionary<string, Card> LastRound { get => lastRound; set => lastRound = value; }
-        public bool TrumpPhase_lock { get => TrumpPhase_lock1; set => TrumpPhase_lock1 = value; }
-        public List<string> Colors { get => colors; set => colors = value; }
-        public List<int> Scores { get => scores; set => scores = value; }
-        public List<Deck> Points { get => points; set => points = value; }
-        public Deck BoardDeck { get => boardDeck; set => boardDeck = value; }
-        public bool TakeTrump_lock { get => takeTrump_lock; set => takeTrump_lock = value; }
-        public bool TakeTrumpAs_lock { get => takeTrumpAs_lock; set => takeTrumpAs_lock = value; }
-        public bool GamePlayTurn_lock { get => gamePlayTurn_lock; set => gamePlayTurn_lock = value; }
-        public bool TrumpPhase_lock1 { get => trumpPhase_lock; set => trumpPhase_lock = value; }
-        public bool PlayPhase_lock { get => playPhase_lock; set => playPhase_lock = value; }
-
         public Game()
         {
+        }
+
+        /**
+         * 
+         * ENTRY/EXIT POINTS
+         * 
+         */
+
+        public void StartGame()
+        {
+            this.Init();
+            this.Run();
+            this.End();
+        }
+
+        private void End()
+        {
+            Console.WriteLine("End");
+        }
+
+        /**
+         * 
+         * TOOLS
+         * 
+         */
+
+        private void FillUserDeck()
+        {
+            Random random = new Random();
+            foreach (string username in this.Users)
+            {
+                while (this.UsersDeck[username].Array.Count() < 8 && masterCopy.Array.Count() > 0)
+                {
+                    int index = random.Next(0, masterCopy.Array.Count());
+                    Card card = masterCopy.Array.ElementAt(index);
+                    this.UsersDeck[username].Add(card);
+                    Console.WriteLine("Adding new card in the " + username + "'s deck: " + card.Value + ":" + card.Color + ". (" + masterCopy.Array.Count() + " left in the deck)");
+                    masterCopy.Remove(index);
+                }
+                Network.Server.Instance.sendDataToClient(username, new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[username])));
+            }
+        }
+
+        private void TrumpDecision()
+        {
+            Console.WriteLine("About to choose what'll be the potential trump...");
+            Random random = new Random();
+            int index = random.Next(0, this.masterCopy.Array.Count());
+            this.TrumpInfos = new TrumpInfos(this.masterCopy.Array.ElementAt(index));
+            this.masterCopy.Remove(index);
+            Console.WriteLine("The trump is set to " + this.TrumpInfos.Card.Value + ":" + this.TrumpInfos.Card.Color);
+            Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, new Deck(new List<Card> { this.TrumpInfos.Card }))));
+        }
+
+        private void GiveCards()
+        {
+            Console.WriteLine("About to give some cards...");
+            this.InitMasterDeck();
+            this.InitUsersDeck();
+        }
+
+        private int GetCardValue(Card card)
+        {
+            if (card == null)
+                return 0;
+            return (card.Color == this.TrumpInfos.RealColor) ? TrumpCardValues[card.Value] : BasicCardValues[card.Value];
+        }
+
+        /**
+         * 
+         * GAME INIT
+         * 
+         */
+
+        private void Init()
+        {
+            Console.WriteLine("Starting game...");
+            Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.SYS, new Syscall(SysCommand.S_START_GAME, null)));
+
+            Thread.Sleep(500);
+
+            Console.WriteLine("Setting teams randomly...");
+            int x = 0;
+            foreach (var username in this.Users)
+            {
+                this.Teams.Add(username, x % 2);
+                Console.WriteLine("Team " + this.Teams[username].ToString() + " has been assigned to " + username + ".");
+                x++;
+            }
+            Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.ENV, new Envcall(EnvInfos.S_SET_TEAM, this.Teams)));
+            this.GiveCards();
+            this.TrumpDecision();
         }
 
         private void InitMasterDeck()
@@ -82,45 +138,11 @@ namespace Servers.Sources
             }
         }
 
-        private void FillUserDeck()
-        {
-            Random random = new Random();
-            foreach (string username in this.Users)
-            {
-                while (this.UsersDeck[username].Array.Count() < 8 && masterCopy.Array.Count() > 0)
-                {
-                    int index = random.Next(0, masterCopy.Array.Count());
-                    Card card = masterCopy.Array.ElementAt(index);
-                    this.UsersDeck[username].Add(card);
-                    Console.WriteLine("Adding new card in the " + username + "'s deck: " + card.Value + ":" + card.Color + ". (" + masterCopy.Array.Count() + " left in the deck)");
-                    masterCopy.Remove(index);
-                }
-                Network.Server.Instance.sendDataToClient(username, new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[username])));
-            }
-        }
-
-        private void TrumpDecision()
-        {
-            Console.WriteLine("About to choose what'll be the potential trump...");
-            Random random = new Random();
-            int index = random.Next(0, this.masterCopy.Array.Count());
-            this.TrumpInfos = new TrumpInfos(this.masterCopy.Array.ElementAt(index));
-            this.masterCopy.Remove(index);
-            Console.WriteLine("The trump is set to " + this.TrumpInfos.Card.Value + ":" + this.TrumpInfos.Card.Color);
-            Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, new Deck(new List<Card> { this.TrumpInfos.Card }))));
-        }
-
-        public void StartGame()
-        {
-            this.Init();
-            this.Run();
-            this.End();
-        }
-
-        private void End()
-        {
-            Console.WriteLine("End");
-        }
+        /**
+         * 
+         * GAME CORE
+         * 
+         */
 
         private void Run()
         {
@@ -129,38 +151,11 @@ namespace Servers.Sources
             Console.WriteLine("Run");
         }
 
-        private void Init()
-        {
-            Console.WriteLine("Starting game...");
-            Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.SYS, new Syscall(SysCommand.S_START_GAME, null)));
-
-            Thread.Sleep(500);
-
-            Console.WriteLine("Setting teams randomly...");
-            int x = 0;
-            foreach (var username in this.Users)
-            {
-                this.Teams.Add(username, x % 2);
-                Console.WriteLine("Team " + this.Teams[username].ToString() + " has been assigned to " + username + ".");
-                x++;
-            }
-            Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.ENV, new Envcall(EnvInfos.S_SET_TEAM, this.Teams)));
-            this.GiveCards();
-            this.TrumpDecision();
-        }
-
-        private void GiveCards()
-        {
-            Console.WriteLine("About to give some cards...");
-            this.InitMasterDeck();
-            this.InitUsersDeck();
-        }
-
-        /**
-         * 
-         * GAME 
-         * 
-         */
+            /**
+             * 
+             * TRUMP PHASE
+             * 
+             */
 
         private bool TrumpPhase()
         {
@@ -226,7 +221,7 @@ namespace Servers.Sources
 
             if (ans)
             {
-                this.AssignTrump(name, this.TrumpInfos.RealColor);
+                this.AssignTrump(name, this.TrumpInfos.Card.Color);
                 this.TrumpPhase_lock = false;
                 Console.WriteLine("Trump updated, exiting phase...");
             }
@@ -251,6 +246,12 @@ namespace Servers.Sources
             this.TakeTrumpAs_lock = false;
         }
 
+            /**
+             * 
+             * PLAY PHASE
+             * 
+             */
+
         private bool PlayPhase()
         {
             this.FillUserDeck();
@@ -274,6 +275,7 @@ namespace Servers.Sources
             return true;
         }
 
+
         private int GamePlayCheckMove(Deck userDeck, Card playedCard, Deck board, string color, bool powerCheck)
         {
             Deck colorDeck = new Deck();
@@ -293,7 +295,8 @@ namespace Servers.Sources
                 Card maxColorCard = (board.Array.Count() > 0)? board.Array.ElementAt(0): null;
                 foreach (var c in BoardDeck.Array)
                 {
-                    if (maxColorCard.Value < c.Value && c.Color == color)
+
+                    if (this.GetCardValue(maxColorCard) < this.GetCardValue(c) && c.Color == color)
                     {
                         maxColorCard = c;
                     }
@@ -301,10 +304,10 @@ namespace Servers.Sources
                 bool haveGreater = false;
                 foreach (var c in colorDeck.Array)
                 {
-                    if (c.Value > maxColorCard.Value)
+                    if (maxColorCard == null || this.GetCardValue(c) > this.GetCardValue(maxColorCard))
                         haveGreater = true;
                 }
-                if (haveGreater && playedCard.Value < maxColorCard.Value)
+                if (haveGreater && this.GetCardValue(playedCard) < this.GetCardValue(maxColorCard))
                     return 1;
             }
             return 0;
@@ -325,13 +328,13 @@ namespace Servers.Sources
             if (name != this.CurrentPlayerName)
                 return;
 
-            //if (this.UsersDeck[name].Array.Contains(card))
-            //{
-                // Get main color if it exists
+            if (this.UsersDeck[name].Contains(card))
+            {
+                //Get main color if it exists
                 string color = card.Color;
                 if (this.BoardDeck.Array.Count() > 0)
                     color = BoardDeck.Array.ElementAt(0).Color;
-                int colorCheck = this.GamePlayCheckMove(this.UsersDeck[name], card, BoardDeck, color, false);
+                int colorCheck = (color != this.TrumpInfos.RealColor)? this.GamePlayCheckMove(this.UsersDeck[name], card, BoardDeck, color, false): 4;
                 switch (colorCheck)
                 {
                     case 0:
@@ -360,6 +363,57 @@ namespace Servers.Sources
                         break;
                 }
             }
-       // }
+       }
+
+        /**
+         *
+         * VARIABLES
+         * 
+         */
+
+        // Trump infos
+        private TrumpInfos trumpInfos = null;
+        // Useful decks and cards containers
+        private Deck masterDeck = new Deck();
+        private Deck masterCopy = new Deck();
+        private Deck boardDeck = new Deck();
+        private Dictionary<string, Deck> usersDeck = new Dictionary<string, Deck> { };
+        private Dictionary<string, Card> lastRound = new Dictionary<string, Card>();
+        private string currentPlayerName = "";
+        // Utils definitions
+        private Dictionary<string, int> teams = new Dictionary<string, int> { };
+        private List<string> users = new List<string> { };
+        private List<String> colors = new List<string> { "clubs", "diamond", "hearts", "spades" };
+        // Points counting tools
+        private List<int> scores = new List<int> { 0, 0 };
+        private List<Deck> points = new List<Deck> { new Deck(), new Deck() };
+        // Cards values
+        private Dictionary<char, int> basicCardValues = new Dictionary<char, int> { { '7', 1 }, { '8', 2 }, { '9', 3 }, { 'j', 4 }, { 'q', 5 }, { 'k', 6 }, { 't', 7 }, { 'a', 8 } };
+        private Dictionary<char, int> trumpCardValues = new Dictionary<char, int> { { '7', 1 }, { '8', 2 }, { 'q', 3 }, { 'k', 4 }, { 't', 5 }, { 'a', 6 }, { '9', 7 }, { 'j', 8 } };
+        // States
+        private bool takeTrump_lock = false;
+        private bool takeTrumpAs_lock = false;
+        private bool gamePlayTurn_lock = false;
+        private bool trumpPhase_lock = false;
+        private bool playPhase_lock = false;
+
+        public List<string> Users { get => users; set => users = value; }
+        public Dictionary<string, int> Teams { get => teams; set => teams = value; }
+        public Dictionary<string, Deck> UsersDeck { get => usersDeck; set => usersDeck = value; }
+        public TrumpInfos TrumpInfos { get => trumpInfos; set => trumpInfos = value; }
+        public string CurrentPlayerName { get => currentPlayerName; set => currentPlayerName = value; }
+        public Dictionary<string, Card> LastRound { get => lastRound; set => lastRound = value; }
+        public bool TrumpPhase_lock { get => TrumpPhase_lock1; set => TrumpPhase_lock1 = value; }
+        public List<string> Colors { get => colors; set => colors = value; }
+        public List<int> Scores { get => scores; set => scores = value; }
+        public List<Deck> Points { get => points; set => points = value; }
+        public Deck BoardDeck { get => boardDeck; set => boardDeck = value; }
+        public bool TakeTrump_lock { get => takeTrump_lock; set => takeTrump_lock = value; }
+        public bool TakeTrumpAs_lock { get => takeTrumpAs_lock; set => takeTrumpAs_lock = value; }
+        public bool GamePlayTurn_lock { get => gamePlayTurn_lock; set => gamePlayTurn_lock = value; }
+        public bool TrumpPhase_lock1 { get => trumpPhase_lock; set => trumpPhase_lock = value; }
+        public bool PlayPhase_lock { get => playPhase_lock; set => playPhase_lock = value; }
+        public Dictionary<char, int> TrumpCardValues { get => trumpCardValues; set => trumpCardValues = value; }
+        public Dictionary<char, int> BasicCardValues { get => basicCardValues; set => basicCardValues = value; }
     }
 }
