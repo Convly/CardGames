@@ -92,8 +92,10 @@ namespace Client
                     break;
                 case EnvInfos.S_SCORES:
                     List<int> score = JsonConvert.DeserializeObject<List<int>>(ev.Data.ToString());
-                    scoreTeam1 = score.ElementAt(0);
-                    scoreTeam2 = score.ElementAt(1);
+                    this.scoreTeam1 = score.ElementAt(0);
+                    this.scoreTeam2 = score.ElementAt(1);
+                    GameBoard.Instance.labelScoreTeam1.Content = this.UsersList.ElementAt(0) + " / " + this.UsersList.ElementAt(2) + ": " + this.scoreTeam1;
+                    GameBoard.Instance.labelScoreTeam2.Content = this.UsersList.ElementAt(1) + " / " + this.UsersList.ElementAt(3) + ": " + this.scoreTeam2;
                     break;
                 case EnvInfos.S_SET_TOUR:
                     userWhoPlay = ev.Data.ToString();
@@ -127,7 +129,7 @@ namespace Client
                     for (int i = 0; i < 4; ++i)
                     {
                         Image image = GameBoard.Instance.boardDeck_panel.Children[i] as Image;
-                        image.Source = new BitmapImage(new Uri(String.Format(""), UriKind.Relative));
+                        image.Source = new BitmapImage(new Uri(String.Format("/Client;component/Img/cards/back.png"), UriKind.Relative));
                     }
                     for (int i = 0; i < boardDeck.Array.Count() && i < 4; ++i)
                     {
