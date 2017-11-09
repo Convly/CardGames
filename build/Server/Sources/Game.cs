@@ -119,7 +119,7 @@ namespace Servers.Sources
             List<string> list = new List<string>();
             List<string> tpUser = this.Users;
             tpUser.Reverse();
-            int beginIndex = tpUser.FindIndex(begin.StartsWith);
+            int beginIndex = tpUser.IndexOf(begin);
             for (int i = 0; i < 4; ++i)
             {
                 list.Add(tpUser.ElementAt((beginIndex + i) % 4));
