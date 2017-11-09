@@ -28,9 +28,9 @@ namespace Client.Windows
             instance = this;
             InitializeComponent();
             GameClient gameClient = GameClient.Instance;
-            player2.Content = gameClient.UsersList.ElementAt((gameClient.UsersList.FindIndex(gameClient.Name.StartsWith) + 1) % 4);
-            player3.Content = gameClient.UsersList.ElementAt((gameClient.UsersList.FindIndex(gameClient.Name.StartsWith) + 2) % 4);
-            player4.Content = gameClient.UsersList.ElementAt((gameClient.UsersList.FindIndex(gameClient.Name.StartsWith) + 3) % 4);
+            player2.Content = gameClient.UsersList.ElementAt((gameClient.UsersList.IndexOf(gameClient.Name) + 1) % 4);
+            player3.Content = gameClient.UsersList.ElementAt((gameClient.UsersList.IndexOf(gameClient.Name) + 2) % 4);
+            player4.Content = gameClient.UsersList.ElementAt((gameClient.UsersList.IndexOf(gameClient.Name) + 3) % 4);
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
