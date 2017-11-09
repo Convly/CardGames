@@ -52,7 +52,7 @@ namespace Servers.Sources
                     Console.WriteLine("Adding new card in the " + username + "'s deck: " + card.Value + ":" + card.Color + ". (" + masterCopy.Array.Count() + " left in the deck)");
                     masterCopy.Remove(index);
                 }
-                Network.Server.Instance.sendDataToClient(username, new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[username])));
+                this.Send(username, PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[username]));
             }
         }
 
@@ -64,7 +64,7 @@ namespace Servers.Sources
             this.TrumpInfos = new TrumpInfos(this.masterCopy.Array.ElementAt(index));
             this.masterCopy.Remove(index);
             Console.WriteLine("The trump is set to " + this.TrumpInfos.Card.Value + ":" + this.TrumpInfos.Card.Color);
-            Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, new Deck(new List<Card> { this.TrumpInfos.Card }))));
+            this.Send(PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, new Deck(new List<Card> { this.TrumpInfos.Card })));
         }
 
         private void GiveCards()
@@ -90,7 +90,7 @@ namespace Servers.Sources
         private void Init()
         {
             Console.WriteLine("Starting game...");
-            Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.SYS, new Syscall(SysCommand.S_START_GAME, null)));
+            this.Send(PacketType.SYS, new Syscall(SysCommand.S_START_GAME, null));
 
             Thread.Sleep(500);
 
@@ -102,7 +102,7 @@ namespace Servers.Sources
                 Console.WriteLine("Team " + this.Teams[username].ToString() + " has been assigned to " + username + ".");
                 x++;
             }
-            Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.ENV, new Envcall(EnvInfos.S_SET_TEAM, this.Teams)));
+            this.Send(PacketType.ENV, new Envcall(EnvInfos.S_SET_TEAM, this.Teams));
             this.GiveCards();
             this.TrumpDecision();
         }
@@ -134,7 +134,7 @@ namespace Servers.Sources
                     Console.WriteLine("Adding new card in the " + username + "'s deck: " + card.Value + ":" + card.Color + ". (" + masterCopy.Array.Count() + " left in the deck)");
                     masterCopy.Remove(index);
                 }
-                Network.Server.Instance.sendDataToClient(username, new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[username])));
+                this.Send(username, PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[username]));
             }
         }
 
@@ -170,8 +170,8 @@ namespace Servers.Sources
                     Console.WriteLine("New turn for " + user);
                     this.TrumpPhaseInitLock(phase);
                     this.CurrentPlayerName = user;
-                    Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.ENV, new Envcall(EnvInfos.S_SET_TOUR, user)));
-                    Network.Server.Instance.sendDataToClient(user, new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_REQUEST_TRUMP_FROM, new KeyValuePair<int, string>(phase, user))));
+                    this.Send(PacketType.ENV, new Envcall(EnvInfos.S_SET_TOUR, user));
+                    this.Send(user, PacketType.GAME, new Gamecall(GameAction.S_REQUEST_TRUMP_FROM, new KeyValuePair<int, string>(phase, user)));
                     this.TrumpPhaseWait(phase);
                     if (this.TrumpInfos.Owner != null)
                         break;
@@ -185,7 +185,7 @@ namespace Servers.Sources
                 return false;
             }
             Console.WriteLine("Launch Game!");
-            Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_TRUMP, this.TrumpInfos)));
+            this.Send(PacketType.GAME, new Gamecall(GameAction.S_SET_TRUMP, this.TrumpInfos));
             return true;
         }
 
@@ -261,16 +261,16 @@ namespace Servers.Sources
             {
                 this.LastRound.Clear();
                 this.BoardDeck.Clear();
-                Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, this.BoardDeck)));
+                this.Send(PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, this.BoardDeck));
                 foreach (var user in this.Users)
                 {
                     Console.WriteLine("New turn for " + user);
                     this.GamePlayTurn_lock = true;
                     this.CurrentPlayerName = user;
-                    Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.ENV, new Envcall(EnvInfos.S_SET_TOUR, user)));
+                    this.Send(PacketType.ENV, new Envcall(EnvInfos.S_SET_TOUR, user));
                     while (this.GamePlayTurn_lock) ;
                 }
-                Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_LASTROUND_DECK, this.LastRound)));
+                this.Send(PacketType.GAME, new Gamecall(GameAction.S_SET_LASTROUND_DECK, this.LastRound));
             }
             return true;
         }
@@ -318,8 +318,8 @@ namespace Servers.Sources
             this.UsersDeck[name].Remove(card);
             this.BoardDeck.Add(card);
             this.LastRound.Add(name, card);
-            Network.Server.Instance.SendToAllClient(new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, this.BoardDeck)));
-            Network.Server.Instance.sendDataToClient(name, new Packet("root", PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[name])));
+            this.Send(PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, this.BoardDeck));
+            this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[name]));
             this.GamePlayTurn_lock = false;
         }
 
@@ -341,7 +341,7 @@ namespace Servers.Sources
                         this.PlayCard(name, card);
                         break;
                     case 3:
-                        Network.Server.Instance.sendDataToClient(name, new Packet("root", PacketType.ERR, new Errcall(Err.FORBIDDEN_CARD, "You have some " + color + " to play!")));
+                        this.Send(name, PacketType.ERR, new Errcall(Err.FORBIDDEN_CARD, "You have some " + color + " to play!"));
                         break;
                     case 4:
                         int trumpCheck = this.GamePlayCheckMove(this.UsersDeck[name], card, BoardDeck, this.TrumpInfos.RealColor, true);
@@ -351,10 +351,10 @@ namespace Servers.Sources
                                 this.PlayCard(name, card);
                                 break;
                             case 1:
-                                Network.Server.Instance.sendDataToClient(name, new Packet("root", PacketType.ERR, new Errcall(Err.FORBIDDEN_CARD, "You have a better card than a " + card.Value + " of " + card.Color + "(trump) to play!")));
+                                this.Send(name, PacketType.ERR, new Errcall(Err.FORBIDDEN_CARD, "You have a better card than a " + card.Value + " of " + card.Color + "(trump) to play!"));
                                 break;
                             case 3:
-                                Network.Server.Instance.sendDataToClient(name, new Packet("root", PacketType.ERR, new Errcall(Err.FORBIDDEN_CARD, "You have some " + TrumpInfos.RealColor + "(which is trump color) to play!")));
+                                this.Send(name, PacketType.ERR, new Errcall(Err.FORBIDDEN_CARD, "You have some " + TrumpInfos.RealColor + "(which is trump color) to play!"));
                                 break;
                             case 4:
                                 this.PlayCard(name, card);
@@ -364,6 +364,24 @@ namespace Servers.Sources
                 }
             }
        }
+
+        /**
+         * 
+         * NETWORK COMMUNICATION
+         * 
+         */
+
+        private bool Send(string name, PacketType type, Object data)
+        {
+            Network.Server.Instance.sendDataToClient(name, new Packet("root", type, data));
+            return true;
+        }
+
+        private bool Send(PacketType type, Object data)
+        {
+            Network.Server.Instance.SendToAllClient(new Packet("root", type, data));
+            return true;
+        }
 
         /**
          *
