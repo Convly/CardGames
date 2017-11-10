@@ -529,23 +529,58 @@ namespace Servers.Sources
                     Envcall e_evt = p.Data as Envcall;
                     switch (e_evt.Type)
                     {
-                        case EnvInfos.S_USER_LIST:
-                            break;
-                        case EnvInfos.S_SCORES:
-                            break;
                         case EnvInfos.S_SET_TOUR:
                             this.AIPlayCard(name);
                             break;
                     }
                     break;
-                default:
+                case PacketType.GAME:
+                    Gamecall g_evt = p.Data as Gamecall;
+                    switch (g_evt.Action)
+                    {
+                        case GameAction.S_REQUEST_TRUMP_FROM:
+                            this.AITakeTrump((KeyValuePair<int, string>)g_evt.Data);
+                            break;
+                    }
                     break;
+            }
+        }
+
+        private void AITakeTrump(KeyValuePair<int, string> data)
+        {
+            string name = data.Value;
+            int lap = data.Key;
+
+            Console.WriteLine("_> AI act for trump");
+
+            Deck uDeck = this.UsersDeck[name];
+            Card trump = this.TrumpInfos.Card;
+
+            Dictionary<string, int> points = new Dictionary<string, int>();
+            foreach (var color in this.Colors)
+                points.Add(color, 0);
+
+            KeyValuePair<string, int> max = new KeyValuePair<string, int>("hearts", 0);
+            foreach (var card in uDeck.Array)
+            {
+                points[card.Color] += this.TrumpCardPoints[card.Value];
+                if (points[card.Color] > max.Value)
+                    max = new KeyValuePair<string, int>(card.Color, points[card.Color]);
+            }
+
+            if (lap == 1)
+            {
+                Referee.Instance.EntryPoint(JsonConvert.SerializeObject(new Packet(name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP, (max.Key == trump.Color)))));
+            }
+            else if (lap == 2)
+            {
+                Referee.Instance.EntryPoint(JsonConvert.SerializeObject(new Packet(name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP_AS, ((max.Value > 11) ? max.Key : "")))));
             }
         }
 
         private void AIPlayCard(string name)
         {
-            if (name != this.CurrentPlayerName)
+            if (name != this.CurrentPlayerName || this.TrumpPhase_lock)
                 return;
 
             Console.WriteLine("_> AI playing a card for " + name);
