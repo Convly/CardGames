@@ -13,6 +13,20 @@ namespace Servers.Sources
 {
     public class Referee
     {
+        private static Referee instance = null;
+
+        public static Referee Instance
+        {
+            get
+            {
+                if (Referee.instance == null)
+                {
+                    Referee.instance = new Referee();
+                }
+                return Referee.instance;
+            }
+        }
+
         private Game game;
 
         internal Game Game { get => game; set => game = value; }
@@ -20,7 +34,7 @@ namespace Servers.Sources
         /// <summary>
         /// Default constructor for Referee Object
         /// </summary>
-        public Referee()
+        private Referee()
         {
             this.Game = new Game();
         }
@@ -119,7 +133,7 @@ namespace Servers.Sources
         /// <param name="name"></param>
         private bool CheckRegisterValidity(string name)
         {
-            if (Game.Users.Count() >= 4)
+            if (Network.Server.Instance.Clients.Count() > 4)
             {
                 Network.Server.Instance.sendDataToClient(name, new Packet("ROOT", PacketType.ERR, new Errcall(Err.SERVER_FULL, "The server is already full. Please, try again later.")));
                 return false;
@@ -137,23 +151,31 @@ namespace Servers.Sources
             if (!this.CheckRegisterValidity(name))
                 return false;
 
-            this.Game.Users.Add(name);
+            if (!this.Game.Users.Contains(name))
+            {
+                this.Game.Users.Add(name);
+            }
+
             Network.Server.Instance.sendDataToClient(name, new Packet("root", PacketType.SYS, new Syscall(SysCommand.S_CONNECTED, null)));
 
             Thread.Sleep(500);
 
             List<string> clientList = new List<string> { };
-            foreach (var user in Network.Server.Instance.Clients)
+            foreach (var user in this.Game.Users)
             {
-                clientList.Add(user.Key);
+                clientList.Add(user);
             }
 
             this.Game.Send(PacketType.ENV, new Envcall(EnvInfos.S_USER_LIST, clientList));
 
-            if (Game.Users.Count() == 4)
+            if (Game.Users.Count() == 4 && !this.Game.GameLaunched)
             {
                 Console.WriteLine("Lets the hunger games begin!");
                 this.Game.StartGame();
+            }
+            else if (this.Game.GameLaunched)
+            {
+                this.Game.Reconnect(name);
             }
             return true;
         }

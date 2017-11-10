@@ -127,15 +127,15 @@ namespace Network
                 InfosClient value;
                 if (!Clients.TryGetValue(name, out value))
                 {
-                    return false;
+                    throw new Exception();
                 }
                 NetworkComms.SendObject("Message", value._ip, value._port, JsonConvert.SerializeObject(data));
             }
-            catch (Exception e)
+            catch (Exception err)
             {
-                Console.Error.WriteLine(e.Message);
+                Console.WriteLine(err.Message);
                 DeleteClient(name);
-                return false;
+                throw new Exception();
             }
             return true;
         }
