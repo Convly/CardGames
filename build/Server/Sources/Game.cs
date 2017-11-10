@@ -1,5 +1,6 @@
 ﻿using CardGameResources.Game;
 using CardGameResources.Net;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace Servers.Sources
 
         public void StartGame()
         {
+            this.GameLaunched = true;
             this.Init();
             this.Run();
             this.End();
@@ -125,7 +127,19 @@ namespace Servers.Sources
                 list.Add(tpUser.ElementAt((beginIndex + i) % 4));
                 Console.WriteLine("-> " + list.ElementAt(i));
             }
+            this.CurrentRoundOrder = list;
             return list;
+        }
+
+        private int IsColorInDeck(Deck deck, string color)
+        {
+            int k = 0;
+            foreach (var card in deck.Array)
+            {
+                if (card.Color == color)
+                    k++;
+            }
+            return k;
         }
 
         /**
@@ -422,6 +436,27 @@ namespace Servers.Sources
          * 
          */
 
+        public void Reconnect(string name)
+        {
+            Console.WriteLine("Reconnect player " + name);
+            this.Send(name, PacketType.SYS, new Syscall(SysCommand.S_START_GAME, null));
+            Thread.Sleep(1000);
+            this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, this.BoardDeck));
+            Thread.Sleep(100);
+            this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[name]));
+            Thread.Sleep(100);
+            this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_LASTROUND_DECK, this.LastRound));
+            Thread.Sleep(100);
+            this.Send(name, PacketType.ENV, new Envcall(EnvInfos.S_SCORES, this.Scores));
+            Thread.Sleep(100);
+            this.Send(name, PacketType.ENV, new Envcall(EnvInfos.S_SET_TEAM, this.Teams));
+            Thread.Sleep(100);
+            this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_TRUMP, this.TrumpInfos));
+            Thread.Sleep(100);
+            this.Send(name, PacketType.ENV, new Envcall(EnvInfos.S_SET_TOUR, this.CurrentPlayerName));
+            Thread.Sleep(100);
+        }
+
         private void ReplacePlayer(string name)
         {
             Console.WriteLine("Connection lost for " + name);
@@ -429,34 +464,120 @@ namespace Servers.Sources
 
         public bool Send(string name, PacketType type, Object data)
         {
+            Packet p = new Packet("root", type, data);
             try
             {
-                Network.Server.Instance.sendDataToClient(name, new Packet("root", type, data));
+               Network.Server.Instance.sendDataToClient(name, p);
             }
             catch (Exception err)
             {
-                Console.WriteLine(err.Message);
-                this.ReplacePlayer(name);
+                Console.WriteLine("Call ai for " + name);
+                Thread.Sleep(500);
+                this.AIEntryPoint(name, p);
             }
             return true;
         }
 
         public bool Send(PacketType type, Object data)
         {
-            try
+            Packet p = new Packet("root", type, data);
+            string cuser = null;
+            List<string> brokenLinks = new List<string>();
+            foreach (var username in this.Users)
             {
-                foreach (var username in this.Users)
+                cuser = username;
+                try
                 {
-                    Network.Server.Instance.sendDataToClient(username, new Packet("root", type, data));
+                    Network.Server.Instance.sendDataToClient(cuser, p);
                 }
-                
+                catch (Exception err)
+                {
+                    Console.WriteLine("Save ai call for " + cuser);
+                    brokenLinks.Add(cuser);
+                }
             }
-            catch (Exception err)
-            {
-                Console.WriteLine(err.Message);
 
+            foreach (var username in brokenLinks)
+            {
+                Console.WriteLine("Call ai for " + username);
+                Thread.Sleep(500);
+                this.AIEntryPoint(username, p);
             }
             return true;
+        }
+
+        /**
+         * 
+         * IA
+         * 
+         */
+
+        private void AIEntryPoint(string name, Packet p)
+        {
+            switch (p.Type)
+            {
+                case PacketType.ENV:
+                    Envcall e_evt = p.Data as Envcall;
+                    switch (e_evt.Type)
+                    {
+                        case EnvInfos.S_USER_LIST:
+                            break;
+                        case EnvInfos.S_SCORES:
+                            break;
+                        case EnvInfos.S_SET_TOUR:
+                            this.AIPlayCard(name);
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void AIPlayCard(string name)
+        {
+            if (name != this.CurrentPlayerName)
+                return;
+
+            Console.WriteLine("Playing a card for " + name);
+
+            Deck uDeck = this.UsersDeck[name];
+            Dictionary<string, Card> board = this.LastRound;
+            string color = (board.Count() == 0) ? null : board[this.CurrentRoundOrder.ElementAt(0)].Color;
+
+            Deck colorDeck = new Deck();
+            Deck trumpDeck = new Deck();
+            Deck restDeck = new Deck();
+            Card maxItem = uDeck.Array.ElementAt(0);
+
+            foreach (var item in uDeck.Array)
+            {
+                if (item.Color == color)
+                {
+                    if (this.GetCardValue(item) > this.GetCardValue(maxItem))
+                    {
+                        maxItem = item;
+                    }
+                    colorDeck.Add(item);
+
+                } else if (item.Color == TrumpInfos.RealColor)
+                {
+                    if (this.IsColorInDeck(uDeck, color) == 0 && this.GetCardValue(item) > this.GetCardValue(maxItem))
+                    {
+                        maxItem = item;
+                    }
+                    trumpDeck.Add(item);
+                } else
+                {
+                    if (this.IsColorInDeck(uDeck, color) == 0 && this.IsColorInDeck(uDeck, TrumpInfos.RealColor) == 0 && this.GetCardValue(item) > this.GetCardValue(maxItem))
+                    {
+                        maxItem = item;
+                    }
+                    restDeck.Add(item);
+                }
+            }
+            Console.WriteLine(maxItem.Value + ":" + maxItem.Color + " will be play for " + name);
+            Referee.Instance.EntryPoint(JsonConvert.SerializeObject(new Packet(name, PacketType.GAME, new Gamecall(GameAction.C_PLAY_CARD, maxItem))));
         }
 
         /**
@@ -473,6 +594,7 @@ namespace Servers.Sources
         private Deck boardDeck = new Deck();
         private Dictionary<string, Deck> usersDeck = new Dictionary<string, Deck> { };
         private Dictionary<string, Card> lastRound = new Dictionary<string, Card>();
+        private List<string> currentRoundOrder = new List<string>();
         private string currentPlayerName = "";
         // Utils definitions
         private Dictionary<string, int> teams = new Dictionary<string, int> { };
@@ -488,6 +610,7 @@ namespace Servers.Sources
         private Dictionary<char, int> basicCardPoints = new Dictionary<char, int> { { '7', 0 }, { '8', 0 }, { '9', 0 }, { 'j', 2 }, { 'q', 3 }, { 'k', 4 }, { 't', 10 }, { 'a', 11 } };
         private Dictionary<char, int> trumpCardPoints = new Dictionary<char, int> { { '7', 0 }, { '8', 0 }, { 'q', 3 }, { 'k', 4 }, { 't', 10 }, { 'a', 11 }, { '9', 14 }, { 'j', 20 } };
         // States
+        private bool gameLaunched = false;
         private bool takeTrump_lock = false;
         private bool takeTrumpAs_lock = false;
         private bool gamePlayTurn_lock = false;
@@ -514,5 +637,7 @@ namespace Servers.Sources
         public Dictionary<char, int> BasicCardValues { get => basicCardValues; set => basicCardValues = value; }
         public Dictionary<char, int> BasicCardPoints { get => basicCardPoints; set => basicCardPoints = value; }
         public Dictionary<char, int> TrumpCardPoints { get => trumpCardPoints; set => trumpCardPoints = value; }
+        public List<string> CurrentRoundOrder { get => currentRoundOrder; set => currentRoundOrder = value; }
+        public bool GameLaunched { get => gameLaunched; set => gameLaunched = value; }
     }
 }
