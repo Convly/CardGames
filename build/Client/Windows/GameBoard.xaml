@@ -97,7 +97,7 @@
                 </Image.RenderTransform>
             </Image>
         </StackPanel>
-        <StackPanel x:Name="boardDeck_panel" Grid.Column="1" AllowDrop="True" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Height="138" Margin="274,289,256,293" Width="400">
+        <StackPanel x:Name="boardDeck_panel" Grid.Column="1" AllowDrop="True" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Height="138" Margin="274,289,241,293" Width="415">
             <Image AllowDrop="True" x:Name="boardCard1" Width="100" Stretch="Fill" Margin="0" Drop="boardCard1_Drop" MinWidth="100" Height="138" MinHeight="138"/>
             <Image AllowDrop="True" x:Name="boardCard2" Width="100" Stretch="Fill" Margin="4,0,0,0" Drop="boardCard2_Drop" Height="138" MinWidth="100" MinHeight="138"/>
             <Image AllowDrop="True" x:Name="boardCard3" Width="100" Stretch="Fill" Margin="4,0,0,0" Drop="boardCard3_Drop" Height="138" MinWidth="100" MinHeight="138"/>
