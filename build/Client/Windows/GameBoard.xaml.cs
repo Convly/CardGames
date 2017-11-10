@@ -191,7 +191,7 @@ namespace Client.Windows
         /// <param name="e"></param>
         private void chat_boxe_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter && chat_boxe.Text.Count() > 0)
             {
                 Network.Client.Instance.SendMsgChat("[" + GameClient.Instance.Name + "] " +  chat_boxe.Text + "\n");
                 chat_boxe.Clear();
