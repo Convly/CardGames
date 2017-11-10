@@ -11,6 +11,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
@@ -33,6 +34,11 @@ namespace Client.Windows
             player4.Content = gameClient.UsersList.ElementAt((gameClient.UsersList.IndexOf(gameClient.Name) + 3) % 4);
         }
 
+        /// <summary>
+        /// Quit the program when you press Escape
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
@@ -41,6 +47,9 @@ namespace Client.Windows
             }
         }
 
+        /// <summary>
+        /// Choose 
+        /// </summary>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Network.Client.Instance.SendDataToServer(new Packet(GameClient.Instance.Name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP_AS, GameBoard.Instance.trumColor_combobox.Text)));
@@ -52,7 +61,11 @@ namespace Client.Windows
             Network.Client.Instance.SendDataToServer(new Packet(GameClient.Instance.Name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP_AS, null)));
             GameBoard.Instance.trumpAs_pnel.Visibility = Visibility.Hidden;
         }
+        /*****************************************************************/
 
+        /// <summary>
+        /// Set the card dropped previously to the boardCard
+        /// </summary>
         private void boardCard1_Drop(object sender, DragEventArgs e)
         {
             Image imageControl = (Image)sender;
@@ -108,7 +121,11 @@ namespace Client.Windows
                 Network.Client.Instance.SendDataToServer(new Packet(GameClient.Instance.Name, PacketType.GAME, new Gamecall(GameAction.C_PLAY_CARD, new Card(value[0], color))));
             }
         }
+        /*********************************************************/
 
+        /// <summary>
+        /// Get the card for the drop with the mouse
+        /// </summary>
         private void userCard1_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Image image = e.Source as Image;
@@ -163,6 +180,22 @@ namespace Client.Windows
             Image image = e.Source as Image;
             DataObject data = new DataObject(typeof(ImageSource), image.Source);
             DragDrop.DoDragDrop(image, data, DragDropEffects.All);
+        }
+        /*******************************************************/
+
+
+        /// <summary>
+        /// Send a msg from the chat to the server
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chat_boxe_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                Network.Client.Instance.SendMsgChat("[" + GameClient.Instance.Name + "] " +  chat_boxe.Text + "\n");
+                chat_boxe.Clear();
+            }
         }
     }
 }

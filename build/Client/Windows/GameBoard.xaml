@@ -28,10 +28,10 @@
             <Image Height="105" Width="71" Source="/Client;component/Img/cards/back.png" Stretch="Fill" VerticalAlignment="Top" Margin="0,10,4,0"/>
         </StackPanel>
         <StackPanel x:Name="lastLap_labl_panel" Orientation="Horizontal" Margin="26,170,25,0" VerticalAlignment="Top" Height="48">
-            <Label Content="Label" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,4,0" VerticalAlignment="Top" Width="71" Height="34"/>
-            <Label Content="Label" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,4,0" VerticalAlignment="Top" RenderTransformOrigin="2.981,1.688" Height="34" Width="70"/>
-            <Label Content="Label" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,4,0" VerticalAlignment="Top" RenderTransformOrigin="4.308,0.525" Height="34" Width="70"/>
-            <Label Content="Label" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,4,0" VerticalAlignment="Top" RenderTransformOrigin="6.218,0.68" Height="34" Width="69"/>
+            <Label Content="" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,4,0" VerticalAlignment="Top" Width="71" Height="34"/>
+            <Label Content="" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,4,0" VerticalAlignment="Top" RenderTransformOrigin="2.981,1.688" Height="34" Width="70"/>
+            <Label Content="" HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,4,0" VerticalAlignment="Top" RenderTransformOrigin="4.308,0.525" Height="34" Width="70"/>
+            <Label Content="" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,4,0" VerticalAlignment="Top" RenderTransformOrigin="6.218,0.68" Height="34" Width="69"/>
         </StackPanel>
         <StackPanel x:Name="userDeck_panel" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Height="326" Margin="179,0,170,-126" VerticalAlignment="Bottom" Width="581">
             <Image AllowDrop="True" x:Name="userCard1" HorizontalAlignment="Left" Height="148" VerticalAlignment="Center" Width="100" RenderTransformOrigin="0.5,0.5" Margin="34,0,0,0" MouseLeftButtonDown="userCard1_MouseLeftButtonDown">
@@ -103,11 +103,9 @@
             <Image AllowDrop="True" x:Name="boardCard3" Width="100" Stretch="Fill" Margin="4,0,0,0" Drop="boardCard3_Drop" Height="138" MinWidth="100" MinHeight="138"/>
             <Image AllowDrop="True" x:Name="boardCard4" Width="100" Stretch="Fill" Margin="4,0,0,0" Drop="boardCard4_Drop" Height="138" MinWidth="100" MinHeight="138"/>
         </StackPanel>
-        <Label x:Name="labelScoreTeam1" Content="Player1 / Player3:     0" Grid.Column="1" HorizontalAlignment="Left" Margin="10,434,0,0" VerticalAlignment="Top" Width="466" FontSize="18" HorizontalContentAlignment="Right"/>
-        <Label x:Name="labelScoreTeam2" Content="0     :Player2 / Player4" Grid.Column="1" HorizontalAlignment="Left" Margin="481,434,0,0" VerticalAlignment="Top" Width="449" HorizontalContentAlignment="Left" FontSize="18"/>
-        <Image Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Height="138" Margin="28,289,0,293" Width="142" Source="/Client;component/Img/Users/User1.png" Stretch="Fill"/>
-        <Image Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="138" Margin="0,289,28,293" Width="142" Source="/Client;component/Img/Users/User3.png" Stretch="Fill"/>
-        <Image Grid.Column="1" HorizontalAlignment="Center" Height="138" Margin="402,32,386,0" VerticalAlignment="Top" Width="142" Source="/Client;component/Img/Users/User2.png" Stretch="Fill"/>
+        <Image x:Name="player2_img" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Height="138" Margin="28,289,0,293" Width="142" Source="/Client;component/Img/Users/User1.png" Stretch="Fill"/>
+        <Image x:Name="player3_img" Grid.Column="1" HorizontalAlignment="Center" Height="138" Margin="402,32,386,0" VerticalAlignment="Top" Width="142" Source="/Client;component/Img/Users/User2.png" Stretch="Fill"/>
+        <Image x:Name="player4_img" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Height="138" Margin="0,289,28,293" Width="142" Source="/Client;component/Img/Users/User3.png" Stretch="Fill"/>
         <Image x:Name="trump_img" Grid.Column="1" HorizontalAlignment="Right" Height="182" Margin="0,10,10,0" VerticalAlignment="Top" Width="124" Source="" Stretch="Fill"/>
         <Label x:Name="trump_labl" Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Margin="0,197,10,0" VerticalAlignment="Top" Width="124" Height="39"/>
         <Label x:Name="player2" Content="Label" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="28,432,0,246" VerticalAlignment="Center" Width="142" Height="42"/>
@@ -127,6 +125,17 @@
             </ComboBox>
             <Button Content="Take" VerticalAlignment="Top" Width="136" Height="24" HorizontalAlignment="Center" Margin="-429,0,0,0" Click="Button_Click"/>
             <Button Content="Pass" Grid.Column="1" VerticalAlignment="Top" Width="144" Height="24" Margin="-145,0,0,0" HorizontalAlignment="Center" Click="Button_Click_1"/>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Left" Height="90" Margin="0,218,0,0" VerticalAlignment="Top" Width="350">
+            <Label x:Name="labelScoreTeam1" Content="Score Team 1" Height="45" HorizontalContentAlignment="Right" VerticalContentAlignment="Top" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" Width="350" FontFamily="Times New Roman"/>
+            <Label x:Name="labelScoreTeam2" Content="Score Team 2" Height="45" HorizontalContentAlignment="Right" VerticalContentAlignment="Bottom" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" Width="350" FontFamily="Times New Roman"/>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Left" Height="61" Margin="0,366,0,0" VerticalAlignment="Top" Width="350">
+            <Label x:Name="playerWhoPlay" Content="" Height="58" FontSize="24" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Width="350"/>
+        </StackPanel>
+        <StackPanel Height="208" VerticalAlignment="Bottom">
+            <TextBlock x:Name="chat_block" TextWrapping="Wrap" Height="176" FontSize="14" FontFamily="Segoe UI Black" Background="#91000000" Foreground="White"/>
+            <TextBox x:Name="chat_boxe" MaxLength="21" Height="34" TextWrapping="Wrap" KeyDown="chat_boxe_KeyDown" VerticalContentAlignment="Center" FontSize="14" FontFamily="Segoe UI Black"/>
         </StackPanel>
     </Grid>
 </Window>

@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 
 namespace Client
@@ -40,6 +42,33 @@ namespace Client
             }
         }
 
+        /// <summary>
+        /// Function trigered when a chat msg is recieved
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public static int ChatEntryPoint(string msg)
+        {
+            App.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Send, new Action(delegate ()
+            {
+                string txt = GameBoard.Instance.chat_block.Text;
+                if (txt.Split('\n').Length - 1 > 8)
+                {
+                    int i = 0;
+                    while (txt[i++] != '\n');
+                    txt = txt.Substring(++i, txt.Length - i);
+                }
+                GameBoard.Instance.chat_block.Inlines.Clear();
+                GameBoard.Instance.chat_block.Inlines.Add(txt + msg);
+            }));
+            return 0;
+        }
+
+        /// <summary>
+        /// Function who check the type of the event server
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static int EntryPoint(Object data)
         {
             if (data.ToString().StartsWith("Error:"))
@@ -74,12 +103,20 @@ namespace Client
             return 0;
         }
 
+        /// <summary>
+        /// Function called when the server send an Error
+        /// </summary>
+        /// <param name="data"></param>
         public void ErrorEntryPoint(Packet data)
         {
             Errcall er = JsonConvert.DeserializeObject<Errcall>(data.Data.ToString());
             MessageBox.Show(er.Message);
         }
 
+        /// <summary>
+        /// Function called when the server send an Env info
+        /// </summary>
+        /// <param name="data"></param>
         public void EnvEntryPoint(Packet data)
         {
             Envcall ev = JsonConvert.DeserializeObject<Envcall>(data.Data.ToString());
@@ -99,13 +136,50 @@ namespace Client
                     break;
                 case EnvInfos.S_SET_TOUR:
                     userWhoPlay = ev.Data.ToString();
+                    DropShadowEffect myDropShadowEffect = new DropShadowEffect();
+                    GameBoard.Instance.player2_img.Effect = null;
+                    GameBoard.Instance.player3_img.Effect = null;
+                    GameBoard.Instance.player4_img.Effect = null;
+                    Color myShadowColor = new Color();
+                    myShadowColor.ScA = 1;
+                    myShadowColor.ScB = 0;
+                    myShadowColor.ScR = 0;
+                    myShadowColor.ScG = 0;
+                    myDropShadowEffect.Direction = 315;
+                    myDropShadowEffect.ShadowDepth = 0;
+                    myDropShadowEffect.Opacity = 0.1;
+                    myDropShadowEffect.BlurRadius = 10;
+                    myDropShadowEffect.RenderingBias = RenderingBias.Quality;
+                    if (userWhoPlay == GameBoard.Instance.player2.Content.ToString())
+                    {
+                        myShadowColor.ScR = 255;
+                        myDropShadowEffect.Color = myShadowColor;
+                        GameBoard.Instance.player2_img.Effect = myDropShadowEffect;
+                    }
+                    else if (userWhoPlay == GameBoard.Instance.player3.Content.ToString())
+                    {
+                        myShadowColor.ScB = 255;
+                        myDropShadowEffect.Color = myShadowColor;
+                        GameBoard.Instance.player3_img.Effect = myDropShadowEffect;
+                    }
+                    else if (userWhoPlay == GameBoard.Instance.player4.Content.ToString())
+                    {
+                        myShadowColor.ScR = 255;
+                        myDropShadowEffect.Color = myShadowColor;
+                        GameBoard.Instance.player4_img.Effect = myDropShadowEffect;
+                    }
+                    GameBoard.Instance.playerWhoPlay.Content = userWhoPlay + " is playing.";
                     break;
                 case EnvInfos.S_SET_REMAINING_TIME:
-
                     break;
             }
 
         }
+
+        /// <summary>
+        /// Function called when the server send a Game info
+        /// </summary>
+        /// <param name="data"></param>
         public void GameEntryPoint(Packet data)
         {
             Gamecall game = JsonConvert.DeserializeObject<Gamecall>(data.Data.ToString());
@@ -207,6 +281,10 @@ namespace Client
             }
         }
 
+        /// <summary>
+        /// Function called when the server send a System info
+        /// </summary>
+        /// <param name="data"></param>
         public void SysEntryPoint(Packet data)
         {
             Syscall sys = JsonConvert.DeserializeObject<Syscall>(data.Data.ToString());
