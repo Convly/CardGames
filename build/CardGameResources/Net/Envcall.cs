@@ -13,7 +13,6 @@ namespace CardGameResources.Net
         S_SET_TOUR, // string
         S_SET_REMAINING_TIME, // int
         S_SET_TEAM, // Dictionary<string, int>
-
     }
     public class Envcall
     {
