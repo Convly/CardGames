@@ -43,6 +43,11 @@ namespace Client
             }
         }
 
+        ~GameClient()
+        {
+            Network.Client.Instance.SendDataToServer(new Packet(this.Name, 0, PacketType.SYS, new Syscall(SysCommand.C_QUIT, null)));
+        }
+
         /// <summary>
         /// Function trigered when a chat msg is recieved
         /// </summary>
