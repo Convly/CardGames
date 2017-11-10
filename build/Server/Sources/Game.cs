@@ -148,8 +148,6 @@ namespace Servers.Sources
             Console.WriteLine("_> Starting game...");
             this.Send(PacketType.SYS, new Syscall(SysCommand.S_START_GAME, null));
 
-            Thread.Sleep(1000);
-
             Console.WriteLine("_> Setting teams randomly...");
             int x = 0;
             foreach (var username in this.Users)
@@ -463,7 +461,6 @@ namespace Servers.Sources
         {
             Console.WriteLine("_> Reconnect player " + name);
             this.Send(name, PacketType.SYS, new Syscall(SysCommand.S_START_GAME, null));
-            Thread.Sleep(1000);
             this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, this.BoardDeck));
             this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[name]));
             this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_LASTROUND_DECK, this.LastRound));
