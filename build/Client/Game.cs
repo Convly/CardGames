@@ -80,6 +80,8 @@ namespace Client
             App.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Send, new Action(delegate ()
             {
                 Packet p = JsonConvert.DeserializeObject<Packet>(data.ToString());
+                Network.Client.Instance.SendDataToServer(new Packet("lock", p.Key, PacketType.SYS, new Syscall(SysCommand.S_POKE, null)));
+
                 if (!GameClient.Instance.connected && p.Type != PacketType.SYS)
                 {
                     return;
@@ -99,7 +101,6 @@ namespace Client
                         GameClient.Instance.SysEntryPoint(p);
                         break;
                 }
-                Console.WriteLine(MainWindow.Instance.name_txtbox.Text);
             }));
             return 0;
         }

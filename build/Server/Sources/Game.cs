@@ -148,8 +148,6 @@ namespace Servers.Sources
             Console.WriteLine("_> Starting game...");
             this.Send(PacketType.SYS, new Syscall(SysCommand.S_START_GAME, null));
 
-            Thread.Sleep(1000);
-
             Console.WriteLine("_> Setting teams randomly...");
             int x = 0;
             foreach (var username in this.Users)
@@ -463,7 +461,6 @@ namespace Servers.Sources
         {
             Console.WriteLine("_> Reconnect player " + name);
             this.Send(name, PacketType.SYS, new Syscall(SysCommand.S_START_GAME, null));
-            Thread.Sleep(1000);
             this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, this.BoardDeck));
             this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[name]));
             this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_LASTROUND_DECK, this.LastRound));
@@ -478,7 +475,7 @@ namespace Servers.Sources
             Packet p = new Packet("root", type, data);
             try
             {
-               Network.Server.Instance.sendDataToClient(name, p);
+               Network.Server.Instance.SendDataToClient(name, p);
             }
             catch (Exception)
             {
@@ -497,7 +494,7 @@ namespace Servers.Sources
                 cuser = username;
                 try
                 {
-                    Network.Server.Instance.sendDataToClient(cuser, p);
+                    Network.Server.Instance.SendDataToClient(cuser, p);
                 }
                 catch (Exception)
                 {
@@ -560,7 +557,7 @@ namespace Servers.Sources
             {
                 if (item.Color == color)
                 {
-                    if (this.GetCardValue(item) > this.GetCardValue(maxItem))
+                    if (this.GetCardValue(item) > this.GetCardValue(maxItem) || maxItem.Color != color)
                     {
                         maxItem = item;
                     }
@@ -568,7 +565,7 @@ namespace Servers.Sources
 
                 } else if (item.Color == this.TrumpInfos.RealColor)
                 {
-                    if (this.IsColorInDeck(uDeck, color) == 0 && this.GetCardValue(item) > this.GetCardValue(maxItem))
+                    if (this.IsColorInDeck(uDeck, color) == 0 && (this.GetCardValue(item) > this.GetCardValue(maxItem) || maxItem.Color != this.TrumpInfos.RealColor))
                     {
                         maxItem = item;
                     }
