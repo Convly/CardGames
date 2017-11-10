@@ -27,17 +27,9 @@ namespace Servers.Sources
             }
         }
 
-        private Game game;
+        private Game game = new Game();
 
         internal Game Game { get => game; set => game = value; }
-
-        /// <summary>
-        /// Default constructor for Referee Object
-        /// </summary>
-        private Referee()
-        {
-            this.Game = new Game();
-        }
 
         /// <summary>
         /// This method is triggered when the server receive an object. It Will redirect the object trhough the different routes
@@ -114,6 +106,9 @@ namespace Servers.Sources
                 case SysCommand.C_REGISTER:
                     this.Register(p.Name, evt);
                     break;
+                case SysCommand.S_POKE:
+                    this.PokeHandling(p.Key, p.Name);
+                    break;
                 case SysCommand.C_QUIT:
                     break;
                 default:
@@ -129,7 +124,7 @@ namespace Servers.Sources
         {
             if (Network.Server.Instance.Clients.Count() > 4)
             {
-                Network.Server.Instance.sendDataToClient(name, new Packet("ROOT", PacketType.ERR, new Errcall(Err.SERVER_FULL, "The server is already full. Please, try again later.")));
+                this.Game.Send(name, PacketType.ERR, new Errcall(Err.SERVER_FULL, "The server is already full. Please, try again later."));
                 return false;
             }
             return true;
@@ -150,9 +145,7 @@ namespace Servers.Sources
                 this.Game.Users.Add(name);
             }
 
-            Network.Server.Instance.sendDataToClient(name, new Packet("root", PacketType.SYS, new Syscall(SysCommand.S_CONNECTED, null)));
-
-            Thread.Sleep(500);
+            this.Game.Send(name, PacketType.SYS, new Syscall(SysCommand.S_CONNECTED, null));
 
             List<string> clientList = new List<string> { };
             foreach (var user in this.Game.Users)
@@ -171,6 +164,14 @@ namespace Servers.Sources
                 this.Game.Reconnect(name);
             }
             return true;
+        }
+
+        private void PokeHandling(uint key, string name)
+        {
+            if (name == "lock" && key != 0)
+            {
+                Network.Server.Instance.Lock_m.Unlock(key);
+            }
         }
     }
 }

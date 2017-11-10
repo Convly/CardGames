@@ -13,7 +13,8 @@ namespace CardGameResources.Net
         S_DISCONNECTED, // string
         S_CONNECTED, // void
         S_START_GAME, // void
-        S_END_GAME // void
+        S_END_GAME, // void
+        S_POKE // void
     }
     public class Syscall
     {

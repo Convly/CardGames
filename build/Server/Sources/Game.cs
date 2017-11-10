@@ -478,7 +478,7 @@ namespace Servers.Sources
             Packet p = new Packet("root", type, data);
             try
             {
-               Network.Server.Instance.sendDataToClient(name, p);
+               Network.Server.Instance.SendDataToClient(name, p);
             }
             catch (Exception)
             {
@@ -497,7 +497,7 @@ namespace Servers.Sources
                 cuser = username;
                 try
                 {
-                    Network.Server.Instance.sendDataToClient(cuser, p);
+                    Network.Server.Instance.SendDataToClient(cuser, p);
                 }
                 catch (Exception)
                 {
@@ -560,7 +560,7 @@ namespace Servers.Sources
             {
                 if (item.Color == color)
                 {
-                    if (this.GetCardValue(item) > this.GetCardValue(maxItem))
+                    if (this.GetCardValue(item) > this.GetCardValue(maxItem) || maxItem.Color != color)
                     {
                         maxItem = item;
                     }
@@ -568,7 +568,7 @@ namespace Servers.Sources
 
                 } else if (item.Color == this.TrumpInfos.RealColor)
                 {
-                    if (this.IsColorInDeck(uDeck, color) == 0 && this.GetCardValue(item) > this.GetCardValue(maxItem))
+                    if (this.IsColorInDeck(uDeck, color) == 0 && (this.GetCardValue(item) > this.GetCardValue(maxItem) || maxItem.Color != this.TrumpInfos.RealColor))
                     {
                         maxItem = item;
                     }

@@ -5,9 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Network.Lock;
+using System.Threading;
+using System.Timers;
 
 namespace Network
 {
@@ -37,6 +38,7 @@ namespace Network
         }
 
         public Dictionary<string, InfosClient> Clients { get => clients; set => clients = value; }
+        public LockManager Lock_m { get => lock_m; set => lock_m = value; }
 
         private Server() { }
 
@@ -52,6 +54,7 @@ namespace Network
             }
         }
 
+        private LockManager     lock_m = new LockManager();
         private string          _serverIP;
         private int             _serverPort;
         public int              _currentId = 0;
@@ -133,16 +136,23 @@ namespace Network
         /// <param name="name">Name of the client you want to send something</param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public bool sendDataToClient(string name, Object data)
+        public void SendDataToClient(string name, CardGameResources.Net.Packet data)
         {
             try
             {
                 InfosClient value;
+
                 if (!Clients.TryGetValue(name, out value))
                 {
                     throw new Exception();
                 }
+
+                uint key = this.Lock_m.Add(name);
+                data.Key = key;
+
                 NetworkComms.SendObject("Message", value._ip, value._port, JsonConvert.SerializeObject(data));
+
+                this.Lock_m.Lock(key);
             }
             catch (Exception err)
             {
@@ -150,7 +160,6 @@ namespace Network
                 DeleteClient(name);
                 throw new Exception();
             }
-            return true;
         }
 
         /// <summary>
