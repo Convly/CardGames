@@ -20,7 +20,7 @@ namespace ServerApplication
     {
         public static void Main(string[] args)
         {
-            Referee referee =Referee.Instance;
+            Referee referee = Referee.Instance;
             string addr = Server.Instance.Start(referee.EntryPoint);
             Console.WriteLine("Server running on:" + addr);
             Console.ReadLine();

@@ -28,6 +28,7 @@ namespace Servers.Sources
             this.Init();
             this.Run();
             this.End();
+            this.Reset();
         }
 
         private void End()
@@ -438,25 +439,47 @@ namespace Servers.Sources
          * 
          */
 
+        public void Reset()
+        {
+            Network.Server.Instance = null;
+            Network.Server.Instance.Start(Referee.Instance.EntryPoint);
+            this.TrumpInfos = null;
+            // Useful decks and cards containers
+            this.MasterDeck = new Deck();
+            this.MasterCopy = new Deck();
+            this.BoardDeck = new Deck();
+            this.UsersDeck = new Dictionary<string, Deck> { };
+            this.LastRound = new Dictionary<string, Card>();
+            this.CurrentRoundOrder = new List<string>();
+            this.CurrentPlayerName = "";
+            // Utils definitions
+            this.RemainingCards = 32;
+            this.Teams = new Dictionary<string, int> { };
+            this.Users = new List<string> { };
+            // Points counting tools
+            this.Scores = new List<int> { 0, 0 };
+            this.Points = new List<Deck> { new Deck(), new Deck() };
+            // States
+            this.GameLaunched = false;
+            this.TakeTrump_lock = false;
+            this.TakeTrumpAs_lock = false;
+            this.GamePlayTurn_lock = false;
+            this.TrumpPhase_lock = false;
+            this.PlayPhase_lock = false;
+        }
+
         public void Reconnect(string name)
         {
             Console.WriteLine("Reconnect player " + name);
             this.Send(name, PacketType.SYS, new Syscall(SysCommand.S_START_GAME, null));
             Thread.Sleep(1000);
             this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, this.BoardDeck));
-            Thread.Sleep(100);
             this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[name]));
-            Thread.Sleep(100);
             this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_LASTROUND_DECK, this.LastRound));
-            Thread.Sleep(100);
             this.Send(name, PacketType.ENV, new Envcall(EnvInfos.S_SCORES, this.Scores));
-            Thread.Sleep(100);
             this.Send(name, PacketType.ENV, new Envcall(EnvInfos.S_SET_TEAM, this.Teams));
-            Thread.Sleep(100);
             this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_TRUMP, this.TrumpInfos));
-            Thread.Sleep(100);
             this.Send(name, PacketType.ENV, new Envcall(EnvInfos.S_SET_TOUR, this.CurrentPlayerName));
-            Thread.Sleep(100);
         }
 
         public bool Send(string name, PacketType type, Object data)

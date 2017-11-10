@@ -30,6 +30,10 @@ namespace Network
                 }
                 return instance;
             }
+            set
+            {
+                instance = value;
+            }
         }
 
         public Dictionary<string, InfosClient> Clients { get => clients; set => clients = value; }
