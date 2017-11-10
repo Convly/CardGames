@@ -104,6 +104,12 @@ namespace Servers.Sources
             }
             int team = this.Teams[maxItem.Key];
             this.Scores[team] += score;
+
+            if (this.RemainingCards == 0)
+            {
+                this.Scores[team] = (this.Scores[(team + 1) % 2] == 0)? 252: this.Scores[team] + 10;
+            }
+
             this.Send(PacketType.ENV, new Envcall(EnvInfos.S_SCORES, this.Scores));
             Console.WriteLine("_> " + maxItem.Key + " won this lap with " + score + " points");
             Console.WriteLine("_> Scores:    Team 1 : " + this.Scores.ElementAt(0) + " - " + this.Scores.ElementAt(1) + " : Team 2");
