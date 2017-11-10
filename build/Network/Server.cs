@@ -30,6 +30,10 @@ namespace Network
                 }
                 return instance;
             }
+            set
+            {
+                instance = value;
+            }
         }
 
         public Dictionary<string, InfosClient> Clients { get => clients; set => clients = value; }
@@ -93,6 +97,15 @@ namespace Network
                 return null;
             }
             return _serverIP + ":" + _serverPort;
+        }
+
+        public void Stop()
+        {
+            Console.WriteLine("Server stopped!");
+            NetworkComms.RemoveGlobalIncomingPacketHandler<string>("Message", ServerRequest);
+            NetworkComms.RemoveGlobalIncomingPacketHandler<string>("Chat", MsgRequest);
+            this.Clients = new Dictionary<string, InfosClient>();
+            Connection.StopListening();
         }
 
         /// <summary>

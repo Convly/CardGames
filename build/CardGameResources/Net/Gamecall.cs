@@ -11,8 +11,6 @@ namespace CardGameResources.Net
         C_PLAY_CARD, // Card
         C_TAKE_TRUMP, // bool
         C_TAKE_TRUMP_AS, // string
-        C_SHOT_BELOT, // void
-        C_SHOT_REBELOT, // void
         S_SET_USER_DECK, // Deck
         S_SET_BOARD_DECK, // Deck
         S_SET_LASTROUND_DECK, // Dictionary<string, Card> (size: 4)

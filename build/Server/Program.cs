@@ -10,20 +10,12 @@ using Servers.Sources;
 
 namespace ServerApplication
 {
-    public class Test
-    {
-        public string name;
-        public string toto;
-    }
-
     class Program
     {
         public static void Main(string[] args)
         {
-            Referee referee =Referee.Instance;
-            string addr = Server.Instance.Start(referee.EntryPoint);
-            Console.WriteLine("Server running on:" + addr);
-            Console.ReadLine();
+            Core core = new Core();
+            core.Start();
         }
     }
 }
