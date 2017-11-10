@@ -12,7 +12,8 @@ namespace CardGameResources.Net
         C_QUIT, // void
         S_DISCONNECTED, // string
         S_CONNECTED, // void
-        S_START_GAME // void
+        S_START_GAME, // void
+        S_END_GAME // void
     }
     public class Syscall
     {
