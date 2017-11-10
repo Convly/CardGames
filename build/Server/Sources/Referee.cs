@@ -75,7 +75,7 @@ namespace Servers.Sources
         {
             Gamecall evt = JsonConvert.DeserializeObject<Gamecall>(p.Data.ToString());
 
-            Console.WriteLine("Got GameCall -> " + evt.Action);
+            Console.WriteLine("_> Gamecall catched from " + p.Name + ":" + evt.Action);
 
             switch (evt.Action)
             {
@@ -90,12 +90,6 @@ namespace Servers.Sources
                 case GameAction.C_TAKE_TRUMP_AS:
                     string takeTrumpAsAnswer = (evt.Data != null) ? evt.Data.ToString() : null;
                     this.Game.TakeTrumpAs_callback(p.Name, takeTrumpAsAnswer);
-                    break;
-                case GameAction.C_SHOT_BELOT:
-                    break;
-                case GameAction.C_SHOT_REBELOT:
-                    break;
-                default:
                     break;
             }
 
@@ -113,7 +107,7 @@ namespace Servers.Sources
         {
             Syscall evt = JsonConvert.DeserializeObject<Syscall>(p.Data.ToString());
 
-            Console.WriteLine("Got Syscall -> " + evt.Command);
+            Console.WriteLine("_> Syscall catched for " + evt.Command);
 
             switch (evt.Command)
             {
@@ -170,7 +164,6 @@ namespace Servers.Sources
 
             if (Game.Users.Count() == 4 && !this.Game.GameLaunched)
             {
-                Console.WriteLine("Lets the hunger games begin!");
                 this.Game.StartGame();
             }
             else if (this.Game.GameLaunched)

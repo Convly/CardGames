@@ -99,6 +99,15 @@ namespace Network
             return _serverIP + ":" + _serverPort;
         }
 
+        public void Stop()
+        {
+            Console.WriteLine("Server stopped!");
+            NetworkComms.RemoveGlobalIncomingPacketHandler<string>("Message", ServerRequest);
+            NetworkComms.RemoveGlobalIncomingPacketHandler<string>("Chat", MsgRequest);
+            this.Clients = new Dictionary<string, InfosClient>();
+            Connection.StopListening();
+        }
+
         /// <summary>
         /// Delete a client to the server
         /// </summary>

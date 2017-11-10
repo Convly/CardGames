@@ -27,13 +27,8 @@ namespace Servers.Sources
             this.GameLaunched = true;
             this.Init();
             this.Run();
-            this.End();
             this.Reset();
-        }
-
-        private void End()
-        {
-            Console.WriteLine("End");
+            Core.Locker = false;
         }
 
         /**
@@ -52,7 +47,7 @@ namespace Servers.Sources
                     int index = random.Next(0, MasterCopy.Array.Count());
                     Card card = MasterCopy.Array.ElementAt(index);
                     this.UsersDeck[username].Add(card);
-                    Console.WriteLine("Adding new card in the " + username + "'s deck: " + card.Value + ":" + card.Color + ". (" + MasterCopy.Array.Count() + " left in the deck)");
+                    Console.WriteLine("_> Adding new card in the " + username + "'s deck: " + card.Value + ":" + card.Color + ". (" + MasterCopy.Array.Count() + " left in the deck)");
                     MasterCopy.Remove(index);
                 }
                 this.Send(username, PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[username]));
@@ -61,18 +56,17 @@ namespace Servers.Sources
 
         private void TrumpDecision()
         {
-            Console.WriteLine("About to choose what'll be the potential trump...");
+            Console.WriteLine("_> About to choose what'll be the potential trump...");
             Random random = new Random();
             int index = random.Next(0, this.MasterCopy.Array.Count());
             this.TrumpInfos = new TrumpInfos(this.MasterCopy.Array.ElementAt(index));
             this.MasterCopy.Remove(index);
-            Console.WriteLine("The trump is set to " + this.TrumpInfos.Card.Value + ":" + this.TrumpInfos.Card.Color);
+            Console.WriteLine("_> The trump is set to " + this.TrumpInfos.Card.Value + ":" + this.TrumpInfos.Card.Color);
             this.Send(PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, new Deck(new List<Card> { this.TrumpInfos.Card })));
         }
 
         private void GiveCards()
         {
-            Console.WriteLine("About to give some cards...");
             this.InitMasterDeck();
             this.InitUsersDeck();
         }
@@ -111,14 +105,14 @@ namespace Servers.Sources
             int team = this.Teams[maxItem.Key];
             this.Scores[team] += score;
             this.Send(PacketType.ENV, new Envcall(EnvInfos.S_SCORES, this.Scores));
-            Console.WriteLine(maxItem.Key + " won this lap with " + score + " points");
-            Console.WriteLine("Team 1 : " + this.Scores.ElementAt(0) + " - " + this.Scores.ElementAt(1) + " : Team 2");
+            Console.WriteLine("_> " + maxItem.Key + " won this lap with " + score + " points");
+            Console.WriteLine("_> Scores:    Team 1 : " + this.Scores.ElementAt(0) + " - " + this.Scores.ElementAt(1) + " : Team 2");
             return maxItem.Key;
         }
 
         private List<string> GetUserListFrom(string begin)
         {
-            Console.WriteLine("Generating new user list where root is" + begin);
+            Console.WriteLine("_> Generating new user list where root is " + begin);
             List<string> list = new List<string>();
             List<string> tpUser = this.Users;
             tpUser.Reverse();
@@ -126,7 +120,7 @@ namespace Servers.Sources
             for (int i = 0; i < 4; ++i)
             {
                 list.Add(tpUser.ElementAt((beginIndex + i) % 4));
-                Console.WriteLine("-> " + list.ElementAt(i));
+                Console.WriteLine("   -> " + list.ElementAt(i));
             }
             this.CurrentRoundOrder = list;
             return list;
@@ -151,17 +145,17 @@ namespace Servers.Sources
 
         private void Init()
         {
-            Console.WriteLine("Starting game...");
+            Console.WriteLine("_> Starting game...");
             this.Send(PacketType.SYS, new Syscall(SysCommand.S_START_GAME, null));
 
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
 
-            Console.WriteLine("Setting teams randomly...");
+            Console.WriteLine("_> Setting teams randomly...");
             int x = 0;
             foreach (var username in this.Users)
             {
                 this.Teams.Add(username, x % 2);
-                Console.WriteLine("Team " + this.Teams[username].ToString() + " has been assigned to " + username + ".");
+                Console.WriteLine("_> Team " + this.Teams[username].ToString() + " has been assigned to " + username + ".");
                 x++;
             }
             this.Send(PacketType.ENV, new Envcall(EnvInfos.S_SET_TEAM, this.Teams));
@@ -177,7 +171,6 @@ namespace Servers.Sources
                 foreach (char c in "789tjqka")
                 {
                     this.MasterDeck.Add(new Card(c, color));
-                    Console.WriteLine("New Card: /" + color + "/" + c + ".png");
                 }
             }
             this.MasterCopy = this.MasterDeck;
@@ -194,7 +187,7 @@ namespace Servers.Sources
                     int index = random.Next(0, MasterCopy.Array.Count());
                     Card card = MasterCopy.Array.ElementAt(index);
                     this.UsersDeck[username].Add(card);
-                    Console.WriteLine("Adding new card in the " + username + "'s deck: " + card.Value + ":" + card.Color + ". (" + MasterCopy.Array.Count() + " left in the deck)");
+                    Console.WriteLine("_> Adding new card in the " + username + "'s deck: " + card.Value + ":" + card.Color + ". (" + MasterCopy.Array.Count() + " left in the deck)");
                     MasterCopy.Remove(index);
                 }
                 this.Send(username, PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[username]));
@@ -209,28 +202,31 @@ namespace Servers.Sources
 
         private void Run()
         {
-            this.TrumpPhase();
-            this.PlayPhase();
-            Console.WriteLine("Run");
+            if (this.TrumpPhase())
+            {
+                this.PlayPhase();
+            }
+            this.Send(PacketType.SYS, new Syscall(SysCommand.S_END_GAME, null));
+
         }
 
-            /**
-             * 
-             * TRUMP PHASE
-             * 
-             */
+        /**
+         * 
+         * TRUMP PHASE
+         * 
+         */
 
         private bool TrumpPhase()
         {
             this.TrumpPhase_lock = true;
             int phase = 1;
-            Console.WriteLine("Trump Phase");
+            Console.WriteLine("_> Trump Phase");
             while (TrumpPhase_lock && phase <= 2)
             {
-                Console.WriteLine("Turn " + phase);
+                Console.WriteLine("_> Turn " + phase);
                 foreach (var user in this.Users)
                 {
-                    Console.WriteLine("New turn for " + user);
+                    Console.WriteLine("_> New turn for " + user);
                     this.TrumpPhaseInitLock(phase);
                     this.CurrentPlayerName = user;
                     this.Send(PacketType.ENV, new Envcall(EnvInfos.S_SET_TOUR, user));
@@ -241,13 +237,13 @@ namespace Servers.Sources
                 }
                 phase++;
             }
-            Console.WriteLine("Exiting Trump phase at turn " + phase);
+            Console.WriteLine("_> Exiting Trump phase at turn " + (phase - 1));
             if (this.TrumpPhase_lock)
             {
-                Console.WriteLine("Abort Game");
+                Console.WriteLine("_> No trump has been chosed, exiting...");
                 return false;
             }
-            Console.WriteLine("Launch Game!");
+            Console.WriteLine("_> Launch Game!");
             this.Send(PacketType.GAME, new Gamecall(GameAction.S_SET_TRUMP, this.TrumpInfos));
             return true;
         }
@@ -277,7 +273,7 @@ namespace Servers.Sources
 
         public void TakeTrump_callback(string name, bool ans)
         {
-            Console.WriteLine("Got Take trump: " + ans + " for " + name);
+            Console.WriteLine("_> Got Take trump: " + ans + " for " + name);
 
             if (name != this.CurrentPlayerName)
                 return;
@@ -286,7 +282,7 @@ namespace Servers.Sources
             {
                 this.AssignTrump(name, this.TrumpInfos.Card.Color);
                 this.TrumpPhase_lock = false;
-                Console.WriteLine("Trump updated, exiting phase...");
+                Console.WriteLine("_> Trump updated, exiting phase...");
             }
 
             this.TakeTrump_lock = false;
@@ -294,7 +290,7 @@ namespace Servers.Sources
 
         public void TakeTrumpAs_callback(string name, string color)
         {
-            Console.WriteLine("Got Take trump as : " + color + " for " + name);
+            Console.WriteLine("_> Got Take trump as : " + color + " for " + name);
 
             if (name != this.CurrentPlayerName)
                 return;
@@ -303,7 +299,7 @@ namespace Servers.Sources
             {
                 this.AssignTrump(name, color);
                 this.TrumpPhase_lock = false;
-                Console.WriteLine("Trump updated, exiting phase...");
+                Console.WriteLine("_> Trump updated, exiting phase...");
             }
 
             this.TakeTrumpAs_lock = false;
@@ -318,7 +314,7 @@ namespace Servers.Sources
         private bool PlayPhase()
         {
             this.FillUserDeck();
-            Console.WriteLine("Game Phase");
+            Console.WriteLine("_> Game Phase");
             this.PlayPhase_lock = true;
             this.CurrentPlayerName = this.Users.ElementAt(0);
             while (this.PlayPhase_lock && this.RemainingCards > 0)
@@ -329,7 +325,7 @@ namespace Servers.Sources
                 List<string> roundUserList = this.GetUserListFrom(this.CurrentPlayerName);
                 foreach (var user in roundUserList)
                 {
-                    Console.WriteLine("New turn for " + user);
+                    Console.WriteLine("_> New turn for " + user);
                     this.GamePlayTurn_lock = true;
                     this.CurrentPlayerName = user;
                     this.Send(PacketType.ENV, new Envcall(EnvInfos.S_SET_TOUR, user));
@@ -338,7 +334,6 @@ namespace Servers.Sources
                 this.CurrentPlayerName = this.CheckDeckWinner();
                 this.Send(PacketType.GAME, new Gamecall(GameAction.S_SET_LASTROUND_DECK, this.LastRound));
             }
-            this.Send(PacketType.SYS, new Syscall(SysCommand.S_END_GAME, null));
             return true;
         }
 
@@ -388,6 +383,7 @@ namespace Servers.Sources
             this.LastRound.Add(name, card);
             this.Send(PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, this.BoardDeck));
             this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_USER_DECK, this.UsersDeck[name]));
+            Console.WriteLine("_> " + name + " played " + card.Value + ":" + card.Color);
             this.GamePlayTurn_lock = false;
         }
 
@@ -409,7 +405,7 @@ namespace Servers.Sources
                         this.PlayCard(name, card);
                         break;
                     case 3:
-                        this.Send(name, PacketType.ERR, new Errcall(Err.FORBIDDEN_CARD, "You have some " + color + " to play!"));
+                        this.Send(name, PacketType.ERR, new Errcall(Err.FORBIDDEN_CARD, "Main color is " + color + " and you have some in your deck. Please play a valid card"));
                         break;
                     case 4:
                         int trumpCheck = this.GamePlayCheckMove(this.UsersDeck[name], card, BoardDeck, this.TrumpInfos.RealColor, true);
@@ -419,10 +415,10 @@ namespace Servers.Sources
                                 this.PlayCard(name, card);
                                 break;
                             case 1:
-                                this.Send(name, PacketType.ERR, new Errcall(Err.FORBIDDEN_CARD, "You have a better card than a " + card.Value + " of " + card.Color + "(trump) to play!"));
+                                this.Send(name, PacketType.ERR, new Errcall(Err.FORBIDDEN_CARD, "You have a better card than a " + card.Value + " of " + card.Color + " (trump color) to play!"));
                                 break;
                             case 3:
-                                this.Send(name, PacketType.ERR, new Errcall(Err.FORBIDDEN_CARD, "You have some " + this.TrumpInfos.RealColor + "(which is trump color) to play!"));
+                                this.Send(name, PacketType.ERR, new Errcall(Err.FORBIDDEN_CARD, "You have some " + this.TrumpInfos.RealColor + " to play! (which is trump color)"));
                                 break;
                             case 4:
                                 this.PlayCard(name, card);
@@ -441,8 +437,6 @@ namespace Servers.Sources
 
         public void Reset()
         {
-            Network.Server.Instance = null;
-            Network.Server.Instance.Start(Referee.Instance.EntryPoint);
             this.TrumpInfos = null;
             // Useful decks and cards containers
             this.MasterDeck = new Deck();
@@ -470,7 +464,7 @@ namespace Servers.Sources
 
         public void Reconnect(string name)
         {
-            Console.WriteLine("Reconnect player " + name);
+            Console.WriteLine("_> Reconnect player " + name);
             this.Send(name, PacketType.SYS, new Syscall(SysCommand.S_START_GAME, null));
             Thread.Sleep(1000);
             this.Send(name, PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, this.BoardDeck));
@@ -489,10 +483,8 @@ namespace Servers.Sources
             {
                Network.Server.Instance.sendDataToClient(name, p);
             }
-            catch (Exception err)
+            catch (Exception)
             {
-                Console.WriteLine("Call ai for " + name);
-                Thread.Sleep(500);
                 this.AIEntryPoint(name, p);
             }
             return true;
@@ -510,17 +502,14 @@ namespace Servers.Sources
                 {
                     Network.Server.Instance.sendDataToClient(cuser, p);
                 }
-                catch (Exception err)
+                catch (Exception)
                 {
-                    Console.WriteLine("Save ai call for " + cuser);
                     brokenLinks.Add(cuser);
                 }
             }
 
             foreach (var username in brokenLinks)
             {
-                Console.WriteLine("Call ai for " + username);
-                Thread.Sleep(500);
                 this.AIEntryPoint(username, p);
             }
             return true;
@@ -559,7 +548,7 @@ namespace Servers.Sources
             if (name != this.CurrentPlayerName)
                 return;
 
-            Console.WriteLine("Playing a card for " + name);
+            Console.WriteLine("_> AI playing a card for " + name);
 
             Deck uDeck = this.UsersDeck[name];
             Dictionary<string, Card> board = this.LastRound;
@@ -596,7 +585,7 @@ namespace Servers.Sources
                     restDeck.Add(item);
                 }
             }
-            Console.WriteLine(maxItem.Value + ":" + maxItem.Color + " will be play for " + name);
+            Console.WriteLine("_> " + maxItem.Value + ":" + maxItem.Color + " will be play for " + name);
             Referee.Instance.EntryPoint(JsonConvert.SerializeObject(new Packet(name, PacketType.GAME, new Gamecall(GameAction.C_PLAY_CARD, maxItem))));
         }
 
