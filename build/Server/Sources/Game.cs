@@ -363,14 +363,11 @@ namespace Servers.Sources
                         maxColorCard = c;
                     }
                 }
-                bool haveGreater = false;
                 foreach (var c in colorDeck.Array)
                 {
-                    if (maxColorCard == null || this.GetCardValue(c) > this.GetCardValue(maxColorCard))
-                        haveGreater = true;
+                    if ((maxColorCard != null && this.GetCardValue(c) > this.GetCardValue(maxColorCard)) && this.GetCardValue(playedCard) < this.GetCardValue(maxColorCard))
+                        return 1;
                 }
-                if (haveGreater && this.GetCardValue(playedCard) < this.GetCardValue(maxColorCard))
-                    return 1;
             }
             return 0;
         }
