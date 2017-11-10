@@ -27,6 +27,11 @@ namespace Client.Windows
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Quit the program when you press Escape
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)

@@ -55,6 +55,10 @@ namespace Network
 
         public static Func<Object, int>  CallBackFct;
 
+        /// <summary>
+        /// Get ip of the pc
+        /// </summary>
+        /// <returns></returns>
         public IPAddress GetIpAddr()
         {
             foreach (IPAddress addr in Dns.GetHostAddresses(Dns.GetHostName()))
@@ -78,6 +82,7 @@ namespace Network
             {
                 CallBackFct = callBackFct;
                 NetworkComms.AppendGlobalIncomingPacketHandler<string>("Message", ServerRequest);
+                NetworkComms.AppendGlobalIncomingPacketHandler<string>("Chat", MsgRequest);
                 _serverIP = GetIpAddr().ToString();
                 _serverPort = 8989;
                 Connection.StartListening(ConnectionType.TCP, new System.Net.IPEndPoint(IPAddress.Parse(_serverIP), _serverPort));
@@ -90,6 +95,11 @@ namespace Network
             return _serverIP + ":" + _serverPort;
         }
 
+        /// <summary>
+        /// Delete a client to the server
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public bool DeleteClient(string name)
         {
             try
@@ -128,6 +138,39 @@ namespace Network
                 throw new Exception();
             }
             return true;
+        }
+
+        /// <summary>
+        /// Send a msg to all the clients for the chat
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public bool SendMsgChat(string msg)
+        {
+            try
+            {
+                foreach (var client in Clients)
+                {
+                    NetworkComms.SendObject("Chat", client.Value._ip, client.Value._port, msg);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.Message);
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Get a Msg from a client for the chat
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="connection"></param>
+        /// <param name="msg"></param>
+        public static void MsgRequest(PacketHeader header, Connection connection, string msg)
+        {
+            Server.Instance.SendMsgChat(msg);
         }
 
         /// <summary>

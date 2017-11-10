@@ -44,6 +44,7 @@ namespace Network
         private int _serverPort;
 
         public static Func<Object, int> CallBackFct;
+        public static Func<string, int> MsgCallbackFct;
 
         /// <summary>
         /// Launch the ClientNetwork
@@ -51,7 +52,7 @@ namespace Network
         /// <param name="callBackFct">Function called when the client receive a message from the server</param>
         /// <param name="serverIP">Ip of the server you want to connect to</param>
         /// <param name="serverPort">Port of the server you want to connect to</param>
-        public void Start(Func<Object, int> callBackFct, string serverIP, int serverPort)
+        public void Start(Func<Object, int> callBackFct, Func<string, int> msgCallbackFct, string serverIP, int serverPort)
         {
             try
             {
@@ -60,7 +61,9 @@ namespace Network
                     _serverIP = serverIP;
                     _serverPort = serverPort;
                     CallBackFct = callBackFct;
+                    MsgCallbackFct = msgCallbackFct;
                     NetworkComms.AppendGlobalIncomingPacketHandler<string>("Message", ClientRequest);
+                    NetworkComms.AppendGlobalIncomingPacketHandler<string>("Chat", MsgRequest);
                     Connection.StartListening(ConnectionType.TCP, new System.Net.IPEndPoint(System.Net.IPAddress.Any, 0));
                 }
             }
@@ -76,7 +79,41 @@ namespace Network
         /// <param name="data"></param>
         public void SendDataToServer(Object data)
         {
-            NetworkComms.SendObject("Message", _serverIP, _serverPort, JsonConvert.SerializeObject(data));
+            try
+            {
+                NetworkComms.SendObject("Message", _serverIP, _serverPort, JsonConvert.SerializeObject(data));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Send a msg for the chat to the server
+        /// </summary>
+        /// <param name="msg"></param>
+        public void SendMsgChat(string msg)
+        {
+            try
+            {
+                NetworkComms.SendObject("Chat", _serverIP, _serverPort, msg);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get a msg for the chat from the server
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="connection"></param>
+        /// <param name="msg"></param>
+        public static void MsgRequest(PacketHeader header, Connection connection, string msg)
+        {
+            MsgCallbackFct(msg);
         }
 
         /// <summary>
