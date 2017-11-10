@@ -25,6 +25,7 @@ namespace Client
         private Deck boardDeck;
         private TrumpInfos trump;
         private Dictionary<string, Card> lastLap;
+        private Dictionary<string, int> teams;
 
         public string Name { get => name; set => name = value; }
         public List<string> UsersList { get => usersList; set => usersList = value; }
@@ -170,7 +171,8 @@ namespace Client
                     }
                     GameBoard.Instance.playerWhoPlay.Content = userWhoPlay + " is playing.";
                     break;
-                case EnvInfos.S_SET_REMAINING_TIME:
+                case EnvInfos.S_SET_TEAM:
+                    teams = JsonConvert.DeserializeObject<Dictionary<string, int>>(ev.Data.ToString());
                     break;
             }
 
@@ -311,6 +313,20 @@ namespace Client
                     App.Current.MainWindow = board;
                     Lobby.Instance.Close();
                     board.Show();
+                    break;
+                case SysCommand.S_END_GAME:
+                    if ((teams[name] == 0 && scoreTeam1 > scoreTeam2) || (teams[name] == 1 && scoreTeam2 > scoreTeam1))
+                    {
+                        MessageBox.Show("You win!");
+                        System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+                        Application.Current.Shutdown();
+                    }
+                    else
+                    {
+                        MessageBox.Show("You lose!");
+                        System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+                        Application.Current.Shutdown();
+                    }
                     break;
             }
         }
