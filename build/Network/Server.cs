@@ -144,7 +144,7 @@ namespace Network
 
                 if (!Clients.TryGetValue(name, out value))
                 {
-                    throw new Exception();
+                    throw new Exception("Can't find player " + name + " in the clients list");
                 }
 
                 uint key = this.Lock_m.Add(name);
@@ -158,7 +158,7 @@ namespace Network
             {
                 Console.WriteLine(err.Message);
                 DeleteClient(name);
-                throw new Exception();
+                throw new Exception("Lead given to the AI");
             }
         }
 

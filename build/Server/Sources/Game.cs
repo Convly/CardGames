@@ -502,8 +502,9 @@ namespace Servers.Sources
                 {
                     Network.Server.Instance.SendDataToClient(cuser, p);
                 }
-                catch (Exception)
+                catch (Exception err)
                 {
+                    Console.Error.WriteLine(err.Message);
                     brokenLinks.Add(cuser);
                 }
             }
