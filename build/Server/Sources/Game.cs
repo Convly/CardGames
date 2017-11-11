@@ -577,7 +577,7 @@ namespace Servers.Sources
             }
             else if (lap == 2)
             {
-                Referee.Instance.EntryPoint(JsonConvert.SerializeObject(new Packet(name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP_AS, ((max.Value > 11) ? max.Key : "")))));
+                Referee.Instance.EntryPoint(JsonConvert.SerializeObject(new Packet(name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP_AS, ((max.Value > 30) ? max.Key : "")))));
             }
         }
 
