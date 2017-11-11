@@ -110,6 +110,8 @@ namespace Servers.Sources
                     this.PokeHandling(p.Key, p.Name);
                     break;
                 case SysCommand.C_QUIT:
+                    Console.WriteLine("_> " + p.Name + " quit");
+                    Network.Server.Instance.DeleteClient(p.Name);
                     break;
                 default:
                     break;

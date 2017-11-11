@@ -16,6 +16,7 @@ namespace Client
     class GameClient
     {
         private bool connected = false;
+        private bool started = false;
         private string name = null;
         private List<string> usersList;
         private int scoreTeam1 = 0;
@@ -26,6 +27,7 @@ namespace Client
         private TrumpInfos trump;
         private Dictionary<string, Card> lastLap;
         private Dictionary<string, int> teams;
+
 
         public string Name { get => name; set => name = value; }
         public List<string> UsersList { get => usersList; set => usersList = value; }
@@ -41,6 +43,13 @@ namespace Client
                 }
                 return instance;
             }
+        }
+
+        public bool Started { get => started; set => started = value; }
+
+        ~GameClient()
+        {
+            Network.Client.Instance.SendDataToServer(new Packet(this.Name, 0, PacketType.SYS, new Syscall(SysCommand.C_QUIT, null)));
         }
 
         /// <summary>
@@ -80,7 +89,6 @@ namespace Client
             App.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Send, new Action(delegate ()
             {
                 Packet p = JsonConvert.DeserializeObject<Packet>(data.ToString());
-                Network.Client.Instance.SendDataToServer(new Packet("lock", p.Key, PacketType.SYS, new Syscall(SysCommand.S_POKE, null)));
 
                 if (!GameClient.Instance.connected && p.Type != PacketType.SYS)
                 {
@@ -101,6 +109,8 @@ namespace Client
                         GameClient.Instance.SysEntryPoint(p);
                         break;
                 }
+
+                Network.Client.Instance.SendDataToServer(new Packet("lock", p.Key, PacketType.SYS, new Syscall(SysCommand.S_POKE, null)));
             }));
             return 0;
         }
@@ -130,6 +140,8 @@ namespace Client
                     Lobby.Instance.waitingMessage.Content = "Waiting for players... (" + usersList.Count + "/4)";
                     break;
                 case EnvInfos.S_SCORES:
+                    if (!GameClient.Instance.Started)
+                        return;
                     List<int> score = JsonConvert.DeserializeObject<List<int>>(ev.Data.ToString());
                     this.scoreTeam1 = score.ElementAt(0);
                     this.scoreTeam2 = score.ElementAt(1);
@@ -137,6 +149,8 @@ namespace Client
                     GameBoard.Instance.labelScoreTeam2.Content = this.UsersList.ElementAt(1) + " / " + this.UsersList.ElementAt(3) + ": " + this.scoreTeam2;
                     break;
                 case EnvInfos.S_SET_TOUR:
+                    if (!GameClient.Instance.Started)
+                        return;
                     userWhoPlay = ev.Data.ToString();
                     DropShadowEffect myDropShadowEffect = new DropShadowEffect();
                     GameBoard.Instance.player2_img.Effect = null;
@@ -185,6 +199,8 @@ namespace Client
         /// <param name="data"></param>
         public void GameEntryPoint(Packet data)
         {
+            if (!GameClient.Instance.Started)
+                return;
             Gamecall game = JsonConvert.DeserializeObject<Gamecall>(data.Data.ToString());
             switch (game.Action)
             {
@@ -314,6 +330,7 @@ namespace Client
                     App.Current.MainWindow = board;
                     Lobby.Instance.Close();
                     board.Show();
+                    GameClient.Instance.Started = true;
                     break;
                 case SysCommand.S_END_GAME:
                     if ((teams[name] == 0 && scoreTeam1 > scoreTeam2) || (teams[name] == 1 && scoreTeam2 > scoreTeam1))

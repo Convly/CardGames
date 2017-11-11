@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Network.Lock
 {
@@ -29,7 +30,18 @@ namespace Network.Lock
             {
                 return false;
             }
-            while (this.Locks[key].State) ;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            while (this.Locks[key].State)
+            {
+                if (sw.ElapsedMilliseconds > 1000)
+                {
+                    Console.WriteLine("Abort locker " + key);
+                    this.Locks[key].State = false;
+                }
+            }
             this.Delete(key);
             return true;
         }

@@ -502,8 +502,9 @@ namespace Servers.Sources
                 {
                     Network.Server.Instance.SendDataToClient(cuser, p);
                 }
-                catch (Exception)
+                catch (Exception err)
                 {
+                    Console.Error.WriteLine(err.Message);
                     brokenLinks.Add(cuser);
                 }
             }
@@ -568,6 +569,8 @@ namespace Servers.Sources
                     max = new KeyValuePair<string, int>(card.Color, points[card.Color]);
             }
 
+            Thread.Sleep(this.AILatency);
+
             if (lap == 1)
             {
                 Referee.Instance.EntryPoint(JsonConvert.SerializeObject(new Packet(name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP, (max.Key == trump.Color)))));
@@ -620,6 +623,9 @@ namespace Servers.Sources
                     restDeck.Add(item);
                 }
             }
+
+            Thread.Sleep(this.AILatency);
+
             Console.WriteLine("_> " + maxItem.Value + ":" + maxItem.Color + " will be play for " + name);
             Referee.Instance.EntryPoint(JsonConvert.SerializeObject(new Packet(name, PacketType.GAME, new Gamecall(GameAction.C_PLAY_CARD, maxItem))));
         }
@@ -641,6 +647,7 @@ namespace Servers.Sources
         private List<string> currentRoundOrder = new List<string>();
         private string currentPlayerName = "";
         // Utils definitions
+        private int aILatency = 1000;
         private int remainingCards = 32;
         private Dictionary<string, int> teams = new Dictionary<string, int> { };
         private List<string> users = new List<string> { };
@@ -686,5 +693,6 @@ namespace Servers.Sources
         public bool GamePlayTurn_lock { get => gamePlayTurn_lock; set => gamePlayTurn_lock = value; }
         public bool TrumpPhase_lock { get => trumpPhase_lock; set => trumpPhase_lock = value; }
         public bool PlayPhase_lock { get => playPhase_lock; set => playPhase_lock = value; }
+        public int AILatency { get => aILatency; set => aILatency = value; }
     }
 }
