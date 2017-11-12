@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,17 +47,43 @@ namespace Servers.Sources
         /// <summary>
         /// Start the server's dependencies like the Network and loop infinitly the execution.
         /// </summary>
-        public void Start()
+        public void Start(string[] args)
         {
+            int localNbGame = 0;
             Referee referee = Referee.Instance;
             while (true)
             {
+                this.SetLog(localNbGame);
                 Core.Locker = true;
                 string addr = Network.Server.Instance.Start(referee.EntryPoint);
                 Console.WriteLine("Server running on:" + addr);
+                if (args != null)
+                {
+                    foreach (var item in args)
+                    {
+                        referee.AddAi(item);
+                    }
+                }
                 while (Core.Locker) ;
                 Network.Server.Instance.Stop();
+                Console.Clear();
+                localNbGame++;
             }
+        }
+
+        /// <summary>
+        /// Bind the standard output of the server to a specific log file
+        /// </summary>
+        /// <param name="nbGame">The amount of game that has been played for this run of the server</param>
+        private void SetLog(int nbGame)
+        {
+            Random rd = new Random();
+            string outName = "game_" + DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss") + "_" + nbGame + "_" + rd.Next().ToString() + ".txt";
+            FileStream filestream = new FileStream(outName, FileMode.Create);
+            var streamwriter = new StreamWriter(filestream);
+            streamwriter.AutoFlush = true;
+            Console.SetOut(streamwriter);
+            Console.SetError(streamwriter);
         }
     }
 }
