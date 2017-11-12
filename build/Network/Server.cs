@@ -83,9 +83,15 @@ namespace Network
         private LockManager     lock_m = new LockManager();
         private string          _serverIP;
         private int             _serverPort;
+        /// <summary>
+        /// Current client ID
+        /// </summary>
         public int              _currentId = 0;
         private Dictionary<string, InfosClient> clients = new Dictionary<string, InfosClient>();
 
+        /// <summary>
+        /// Callback method which will be called when the server receive client request
+        /// </summary>
         public static Func<Object, int>  CallBackFct;
 
         /// <summary>
