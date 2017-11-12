@@ -66,7 +66,7 @@ namespace Client
                 {
                     int i = 0;
                     while (txt[i++] != '\n');
-                    txt = txt.Substring(i++, txt.Length - i);
+                    txt = txt.Substring(i, txt.Length - i++);
                 }
                 GameBoard.Instance.chat_block.Inlines.Clear();
                 GameBoard.Instance.chat_block.Inlines.Add(txt + msg);
