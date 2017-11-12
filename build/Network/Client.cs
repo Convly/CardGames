@@ -11,9 +11,17 @@ using Newtonsoft.Json;
 
 namespace Network
 {
+    /// <summary>
+    /// Client class for the Network library.
+    /// This class allow the user to start a transmission in order to receive and send requests to a single <see cref="Server"/>.
+    /// </summary>
     public class Client
     {
         private static Client instance = null;
+
+        /// <summary>
+        /// Getter for the singleton instance of a <see cref="Client"/>
+        /// </summary>
         public static Client Instance
         {
             get
@@ -28,6 +36,9 @@ namespace Network
 
         private Client() { }
 
+        /// <summary>
+        /// Destructor of the <see cref="Client"/>. When called, it'll shutdown all the transmissions
+        /// </summary>
         ~Client()
         {
             try
@@ -43,13 +54,20 @@ namespace Network
         private string _serverIP = null;
         private int _serverPort;
 
+        /// <summary>
+        /// Static callback method for the server request
+        /// </summary>
         public static Func<Object, int> CallBackFct;
+        /// <summary>
+        /// Static callback method for the chat server request
+        /// </summary>
         public static Func<string, int> MsgCallbackFct;
 
         /// <summary>
         /// Launch the ClientNetwork
         /// </summary>
         /// <param name="callBackFct">Function called when the client receive a message from the server</param>
+        /// <param name="msgCallbackFct">Function called when the client received a chat message from the server</param>
         /// <param name="serverIP">Ip of the server you want to connect to</param>
         /// <param name="serverPort">Port of the server you want to connect to</param>
         public void Start(Func<Object, int> callBackFct, Func<string, int> msgCallbackFct, string serverIP, int serverPort)

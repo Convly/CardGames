@@ -12,15 +12,32 @@ using System.Timers;
 
 namespace Network
 {
+    /// <summary>
+    /// A class which contains the network information for a client.
+    /// </summary>
     public class InfosClient
     {
+        /// <summary>
+        /// A <see cref="string"/> for the IP of the client
+        /// </summary>
         public string   _ip;
+        /// <summary>
+        /// An <see cref="int"/> for the port of the client
+        /// </summary>
         public int      _port;
     }
 
+    /// <summary>
+    /// Server class for the Network library.
+    /// This class allow the user to start a transmission in order to receive and send requests to multiples <see cref="Client"/>.
+    /// </summary>
     public class Server
     {
         private static Server instance = null;
+
+        /// <summary>
+        /// A getter and a setter for the server singleton instance
+        /// </summary>
         public static Server Instance
         {
             get
@@ -37,11 +54,20 @@ namespace Network
             }
         }
 
+        /// <summary>
+        /// A getter and a setter to a dictionnary which link for each client's name their network informations (<see cref="InfosClient"/>)
+        /// </summary>
         public Dictionary<string, InfosClient> Clients { get => clients; set => clients = value; }
+        /// <summary>
+        /// A getter and a setter for the stored LockerManager wich will manager all the synchronous network operations
+        /// </summary>
         public LockManager Lock_m { get => lock_m; set => lock_m = value; }
 
         private Server() { }
 
+        /// <summary>
+        /// Destructor for the <see cref="Server"/> class. It will shutdwon the connection.
+        /// </summary>
         ~Server()
         {
             try
@@ -102,6 +128,9 @@ namespace Network
             return _serverIP + ":" + _serverPort;
         }
 
+        /// <summary>
+        /// Stop the server by closing all packet handlers and stop the request listening. It also delete all the client's infos
+        /// </summary>
         public void Stop()
         {
             Console.WriteLine("Server stopped!");
