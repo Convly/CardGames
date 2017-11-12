@@ -187,5 +187,21 @@ namespace Servers.Sources
                 Network.Server.Instance.Lock_m.Unlock(key);
             }
         }
+
+        /// <summary>
+        /// Method called by the <see cref="Core"/> class to add a new AI in the game
+        /// </summary>
+        /// <param name="name">Name of the AI we want to add</param>
+        public void AddAi(string name)
+        {
+            InfosClient ic = new InfosClient()
+            {
+                _ip = "",
+                _port = -1
+            };
+
+            Server.Instance.Clients.Add(name, ic);
+            this.Register(name, null);
+        }
     }
 }

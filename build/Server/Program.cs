@@ -18,7 +18,7 @@ namespace ServerApplication
         public static void Main(string[] args)
         {
             Core core = new Core();
-            core.Start();
+            core.Start(args);
         }
     }
 }
