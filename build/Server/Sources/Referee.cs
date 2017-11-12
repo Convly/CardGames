@@ -8,13 +8,20 @@ using CardGameResources.Net;
 using Network;
 using System.Threading;
 using CardGameResources.Game;
+using Network.Lock;
 
 namespace Servers.Sources
 {
+    /// <summary>
+    /// The mission of the referee is to regulate the flow of request handled by the <see cref="Server"/>. It also act as a router and can interact directly with the <see cref="Game"/>.
+    /// </summary>
     public class Referee
     {
         private static Referee instance = null;
 
+        /// <summary>
+        /// A getter and a setter for the Referee singleton instance
+        /// </summary>
         public static Referee Instance
         {
             get
@@ -34,7 +41,7 @@ namespace Servers.Sources
         /// <summary>
         /// This method is triggered when the server receive an object. It Will redirect the object trhough the different routes
         /// </summary>
-        /// <param name="Obj"></param>
+        /// <param name="obj">The <see cref="Packet"/> object serialized as an <see cref="Object"/></param>
         public int EntryPoint(Object obj)
         {
             Packet p = JsonConvert.DeserializeObject<Packet>(obj.ToString());
@@ -60,9 +67,9 @@ namespace Servers.Sources
          */
 
         /// <summary>
-        /// This function is cqlled by the main entry point when the received object is of type "GAME"
+        /// This function is called by the main entry point when the received object is of type <see cref="PacketType.GAME"/>
         /// </summary>
-        /// <param name="p"></param>
+        /// <param name="p">The <see cref="Packet"/> received from the server</param>
         private void GameEntryPoint(Packet p)
         {
             Gamecall evt = JsonConvert.DeserializeObject<Gamecall>(p.Data.ToString());
@@ -92,14 +99,14 @@ namespace Servers.Sources
          */
 
         /// <summary>
-        /// This function is cqlled by the main entry point when the received object is of type "SYS"
+        /// This function is called by the main entry point when the received object is of type <see cref="PacketType.SYS"/>
         /// </summary>
-        /// <param name="p"></param>
+        /// <param name="p">The <see cref="Packet"/> received from the server</param>
         private void SysEntryPoint(Packet p)
         {
             Syscall evt = JsonConvert.DeserializeObject<Syscall>(p.Data.ToString());
 
-            Console.WriteLine("_> Syscall catched for " + evt.Command);
+            Console.WriteLine("_> Syscall catched from " + p.Name + ":" + evt.Command);
 
             switch (evt.Command)
             {
@@ -119,9 +126,9 @@ namespace Servers.Sources
         }
 
         /// <summary>
-        /// Check if the user can register to the server
+        /// Check if the client can register to the server
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="name">The name of the client</param>
         private bool CheckRegisterValidity(string name)
         {
             if (Network.Server.Instance.Clients.Count() > 4)
@@ -133,10 +140,10 @@ namespace Servers.Sources
         }
 
         /// <summary>
-        /// Try to register a user into the server. If the server is full, it'll start the game.
+        /// Try to register a user into the server. If the server went full, it'll start the game.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="evt"></param>
+        /// <param name="name">The name of the client who try to register</param>
+        /// <param name="evt">The content of the <see cref="Syscall"/> event contained in the received <see cref="Packet"/></param>
         private bool Register(string name, Syscall evt)
         {
             if (!this.CheckRegisterValidity(name))
@@ -168,6 +175,11 @@ namespace Servers.Sources
             return true;
         }
 
+        /// <summary>
+        /// This method is used to handle synchronous events. It will unlock the <see cref="Locker"/> associated to the key of the <see cref="Packet"/>
+        /// </summary>
+        /// <param name="key">The key of the <see cref="Locker"/></param>
+        /// <param name="name">The name of the client who try to unlock the <see cref="Locker"/></param>
         private void PokeHandling(uint key, string name)
         {
             if (name == "lock" && key != 0)
