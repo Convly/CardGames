@@ -10,6 +10,9 @@ using Servers.Sources;
 
 namespace ServerApplication
 {
+    /// <summary>
+    /// Entry point of the server project
+    /// </summary>
     class Program
     {
         public static void Main(string[] args)

@@ -4,24 +4,25 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Servers.Sources
 {
+    /// <summary>
+    /// Game Logic for the Belote card Game used by <see cref="Referee"/>
+    /// </summary>
     class Game
     {
+        /// <summary>
+        /// Default constructor for <see cref="Game"/>
+        /// </summary>
         public Game()
         {
         }
 
-        /**
-         * 
-         * ENTRY/EXIT POINTS
-         * 
-         */
-
+        /// <summary>
+        /// Entry point of the game. Called by the referee when 4 players are connected
+        /// </summary>
         public void StartGame()
         {
             this.GameLaunched = true;
@@ -31,12 +32,9 @@ namespace Servers.Sources
             Core.Locker = false;
         }
 
-        /**
-         * 
-         * TOOLS
-         * 
-         */
-
+        /// <summary>
+        /// This method will randomly fill the <see cref="Deck"/> of all the connected users with a limit of 8 <see cref="Card"/> per user.
+        /// </summary>
         private void FillUserDeck()
         {
             Random random = new Random();
@@ -54,6 +52,9 @@ namespace Servers.Sources
             }
         }
 
+        /// <summary>
+        /// This method will chose a card for the trump randomly and will then notify all the clients about it
+        /// </summary>
         private void TrumpDecision()
         {
             Console.WriteLine("_> About to choose what'll be the potential trump...");
@@ -65,12 +66,21 @@ namespace Servers.Sources
             this.Send(PacketType.GAME, new Gamecall(GameAction.S_SET_BOARD_DECK, new Deck(new List<Card> { this.TrumpInfos.Card })));
         }
 
+        /// <summary>
+        /// This method distribute randomly 5 <see cref="Card"/> per user
+        /// </summary>
         private void GiveCards()
         {
             this.InitMasterDeck();
             this.InitUsersDeck();
         }
 
+        /// <summary>
+        /// Return the real value for the paramaeter <paramref name="card"/>.
+        /// This method allow the user to do some arithmetics and comparaison with the cards.
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns>The value of the <paramref name="card"/> as an integer</returns>
         private int GetCardValue(Card card)
         {
             if (card == null)
@@ -78,6 +88,11 @@ namespace Servers.Sources
             return (card.Color == this.TrumpInfos.RealColor) ? TrumpCardValues[card.Value] : BasicCardValues[card.Value];
         }
 
+        /// <summary>
+        /// Get the amount of point for a specific <see cref="Card"/>. This method take in consideration the actual trump.
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns>The amount of point for <paramref name="card"/></returns>
         private int GetCardPoints(Card card)
         {
             if (card == null)
@@ -85,6 +100,10 @@ namespace Servers.Sources
             return (card.Color == this.TrumpInfos.RealColor) ? TrumpCardPoints[card.Value] : BasicCardPoints[card.Value];
         }
 
+        /// <summary>
+        /// This method check who's the winner for the current round, update the scores and notify the users about it
+        /// </summary>
+        /// <returns>The name of the winner</returns>
         private string CheckDeckWinner()
         {
             string mainColor = this.LastRound[this.CurrentPlayerName].Color;
@@ -116,6 +135,11 @@ namespace Servers.Sources
             return maxItem.Key;
         }
 
+        /// <summary>
+        /// Generate a new list of user which indicate the order of the plays
+        /// </summary>
+        /// <param name="begin">The username which will play first</param>
+        /// <returns>The ordered list of players</returns>
         private List<string> GetUserListFrom(string begin)
         {
             Console.WriteLine("_> Generating new user list where root is " + begin);
@@ -132,6 +156,12 @@ namespace Servers.Sources
             return list;
         }
 
+        /// <summary>
+        /// This method will check if there is at least one <see cref="Card"/> with the color <paramref name="color"/> in the <paramref name="deck"/>
+        /// </summary>
+        /// <param name="deck">The <see cref="Deck"/> of card which will be the object of the search.</param>
+        /// <param name="color">The color which will be used for the search.</param>
+        /// <returns>The number of <see cref="Card"/> which match the <paramref name="color"/></returns>
         private int IsColorInDeck(Deck deck, string color)
         {
             int k = 0;
@@ -143,12 +173,9 @@ namespace Servers.Sources
             return k;
         }
 
-        /**
-         * 
-         * GAME INIT
-         * 
-         */
-
+        /// <summary>
+        /// This method will initialize each component of the game logic
+        /// </summary>
         private void Init()
         {
             Console.WriteLine("_> Starting game...");
@@ -168,6 +195,9 @@ namespace Servers.Sources
             this.Send(PacketType.ENV, new Envcall(EnvInfos.S_SCORES, this.Scores));
         }
 
+        /// <summary>
+        /// Initialize the master deck, which is a constant <see cref="Deck"/> of all the 32 avalaible cards.
+        /// </summary>
         private void InitMasterDeck()
         {
             foreach (string color in this.Colors)
@@ -180,6 +210,9 @@ namespace Servers.Sources
             this.MasterCopy = this.MasterDeck;
         }
 
+        /// <summary>
+        /// Initialize the user <see cref="Deck"/>s with 5 <see cref="Card"/>
+        /// </summary>
         private void InitUsersDeck()
         {
             Random random = new Random();
@@ -198,12 +231,10 @@ namespace Servers.Sources
             }
         }
 
-        /**
-         * 
-         * GAME CORE
-         * 
-         */
-
+        
+        /// <summary>
+        /// Start the GamePlay phases: TrumpPhase, PlayPhase ; then end the game
+        /// </summary>
         private void Run()
         {
             if (this.TrumpPhase())
@@ -211,15 +242,12 @@ namespace Servers.Sources
                 this.PlayPhase();
             }
             this.Send(PacketType.SYS, new Syscall(SysCommand.S_END_GAME, null));
-
         }
 
-        /**
-         * 
-         * TRUMP PHASE
-         * 
-         */
-
+        /// <summary>
+        /// Manage the trump phase: init, request, chose, assign and notify
+        /// </summary>
+        /// <returns></returns>
         private bool TrumpPhase()
         {
             this.TrumpPhase_lock = true;
@@ -252,6 +280,10 @@ namespace Servers.Sources
             return true;
         }
 
+        /// <summary>
+        /// Manage the locks for the trump phase
+        /// </summary>
+        /// <param name="phase"></param>
         private void TrumpPhaseInitLock(int phase)
         {
             if (phase == 1)
@@ -260,6 +292,10 @@ namespace Servers.Sources
                 this.TakeTrumpAs_lock = true;
         }
 
+        /// <summary>
+        /// Lock the actions for trump phase
+        /// </summary>
+        /// <param name="phase"></param>
         private void TrumpPhaseWait(int phase)
         {
             if (phase == 1)
@@ -268,6 +304,11 @@ namespace Servers.Sources
                 while (this.TakeTrumpAs_lock) ;
         }
 
+        /// <summary>
+        /// Assign a <paramref name="name"/> and a <paramref name="color"/> to the <see cref="TrumpInfos"/>
+        /// </summary>
+        /// <param name="name">The name of the owner</param>
+        /// <param name="color">The name of the real color of the tump</param>
         private void AssignTrump(string name, string color)
         {
             this.TrumpInfos.Owner = name;
@@ -275,6 +316,11 @@ namespace Servers.Sources
             this.UsersDeck[name].Add(this.TrumpInfos.Card);
         }
 
+        /// <summary>
+        /// Callback method when the server receive a <see cref="GameAction.C_TAKE_TRUMP"/> request
+        /// </summary>
+        /// <param name="name">The name of the user who sent the request</param>
+        /// <param name="ans">The answer of the user</param>
         public void TakeTrump_callback(string name, bool ans)
         {
             Console.WriteLine("_> Got Take trump: " + ans + " for " + name);
@@ -292,6 +338,11 @@ namespace Servers.Sources
             this.TakeTrump_lock = false;
         }
 
+        /// <summary>
+        /// Callback method when the server receive a <see cref="GameAction.C_TAKE_TRUMP_AS"/> request
+        /// </summary>
+        /// <param name="name">The name of the user who sent the request</param>
+        /// <param name="color">A string containing the color of the trump, or nothing</param>
         public void TakeTrumpAs_callback(string name, string color)
         {
             Console.WriteLine("_> Got Take trump as : " + color + " for " + name);
@@ -309,12 +360,9 @@ namespace Servers.Sources
             this.TakeTrumpAs_lock = false;
         }
 
-            /**
-             * 
-             * PLAY PHASE
-             * 
-             */
-
+        /// <summary>
+        /// Entry point for the main gameplay phase. Manage the core of the game.
+        /// </summary>
         private bool PlayPhase()
         {
             this.FillUserDeck();
@@ -341,7 +389,15 @@ namespace Servers.Sources
             return true;
         }
 
-
+        /// <summary>
+        /// Utility method mainly used by <see cref="PlayCard_callback(string, Card)"/> to check if a user can play a specific <see cref="Card"/>
+        /// </summary>
+        /// <param name="userDeck">The deck from which "<paramref name="playedCard"/>" is issued</param>
+        /// <param name="playedCard">The <see cref="Card"/> played</param>
+        /// <param name="board">The current <see cref="Deck"/> on the board</param>
+        /// <param name="color">The current board main color</param>
+        /// <param name="powerCheck">If set to true, the method will also check if the user have a better card in he's <see cref="Deck"/></param>
+        /// <returns></returns>
         private int GamePlayCheckMove(Deck userDeck, Card playedCard, Deck board, string color, bool powerCheck)
         {
             Deck colorDeck = new Deck();
@@ -376,6 +432,12 @@ namespace Servers.Sources
             return 0;
         }
 
+        /// <summary>
+        /// This function will play a specific <see cref="Card"/> for <paramref name="name"/>.
+        /// It'll also update all the needed variables and trigger all the changes to the users.
+        /// </summary>
+        /// <param name="name">The name of the user who sent the command</param>
+        /// <param name="card">The card that the user want to play</param>
         private void PlayCard(string name, Card card)
         {
             this.RemainingCards -= 1;
@@ -388,6 +450,12 @@ namespace Servers.Sources
             this.GamePlayTurn_lock = false;
         }
 
+        /// <summary>
+        /// Entry point of the main rules method. It will be called when the server receive a request of type <see cref="GameAction.C_PLAY_CARD"/>
+        /// This function act also as a referee by checking if the user movement does not break any rules.
+        /// </summary>
+        /// <param name="name">The name of the user who sent the command</param>
+        /// <param name="card">The card that the user want to play</param>
         public void PlayCard_callback(string name, Card card)
         {
             if (name != this.CurrentPlayerName)
@@ -430,12 +498,9 @@ namespace Servers.Sources
             }
        }
 
-        /**
-         * 
-         * NETWORK COMMUNICATION
-         * 
-         */
-
+        /// <summary>
+        /// This method is designed to totally reset the game logic.
+        /// </summary>
         public void Reset()
         {
             this.TrumpInfos = null;
@@ -463,6 +528,10 @@ namespace Servers.Sources
             this.PlayPhase_lock = false;
         }
 
+        /// <summary>
+        /// Reconnect a player who's been previously disconnect from the server.
+        /// </summary>
+        /// <param name="name">The name of the player who just registered</param>
         public void Reconnect(string name)
         {
             Console.WriteLine("_> Reconnect player " + name);
@@ -476,6 +545,12 @@ namespace Servers.Sources
             this.Send(name, PacketType.ENV, new Envcall(EnvInfos.S_SET_TOUR, this.CurrentPlayerName));
         }
 
+        /// <summary>
+        /// Send some <paramref name="data"/> of type "<paramref name="type"/>" to <paramref name="name"/>.
+        /// </summary>
+        /// <param name="name">The username who will receive the request</param>
+        /// <param name="type">The type of the <paramref name="data"/> which will be send</param>
+        /// <param name="data">The data which will be send</param>
         public bool Send(string name, PacketType type, Object data)
         {
             Packet p = new Packet("root", type, data);
@@ -490,6 +565,12 @@ namespace Servers.Sources
             return true;
         }
 
+        /// <summary>
+        /// Send some <paramref name="data"/> of type "<paramref name="type"/>" to all registered users.
+        /// </summary>
+        /// <param name="type">The type of <paramref name="data"/> which will be send</param>
+        /// <param name="data">The data which will be send</param>
+        /// <returns></returns>
         public bool Send(PacketType type, Object data)
         {
             Packet p = new Packet("root", type, data);
@@ -516,12 +597,11 @@ namespace Servers.Sources
             return true;
         }
 
-        /**
-         * 
-         * IA
-         * 
-         */
-
+        /// <summary>
+        /// Main entry point for all the AI actions
+        /// </summary>
+        /// <param name="name">Define the name of the player which the AI will play for.</param>
+        /// <param name="p">The packet transmission that the AI will use</param>
         private void AIEntryPoint(string name, Packet p)
         {
             switch (p.Type)
@@ -547,6 +627,10 @@ namespace Servers.Sources
             }
         }
 
+        /// <summary>
+        /// Logic for AI on <see cref="GameAction.S_REQUEST_TRUMP_FROM"/> event.
+        /// </summary>
+        /// <param name="data">A pair of value which contains the lap number and the name of the player who must play</param>
         private void AITakeTrump(KeyValuePair<int, string> data)
         {
             string name = data.Value;
@@ -581,6 +665,10 @@ namespace Servers.Sources
             }
         }
 
+        /// <summary>
+        /// Logic for AI on <see cref="EnvInfos.S_SET_TOUR"/> event.
+        /// </summary>
+        /// <param name="name">The name of the player who must play</param>
         private void AIPlayCard(string name)
         {
             if (name != this.CurrentPlayerName || this.TrumpPhase_lock)
@@ -629,12 +717,6 @@ namespace Servers.Sources
             Console.WriteLine("_> " + maxItem.Value + ":" + maxItem.Color + " will be play for " + name);
             Referee.Instance.EntryPoint(JsonConvert.SerializeObject(new Packet(name, PacketType.GAME, new Gamecall(GameAction.C_PLAY_CARD, maxItem))));
         }
-
-        /**
-         *
-         * VARIABLES
-         * 
-         */
 
         // Trump infos
         private TrumpInfos trumpInfos = null;
