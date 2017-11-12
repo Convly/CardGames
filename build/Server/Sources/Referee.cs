@@ -131,7 +131,7 @@ namespace Servers.Sources
         /// <param name="name">The name of the client</param>
         private bool CheckRegisterValidity(string name)
         {
-            if (Network.Server.Instance.Clients.Count() > 4)
+            if (Game.Users.Count >= 4 && !this.Game.Users.Exists(e => e.EndsWith(name)))
             {
                 this.Game.Send(name, PacketType.ERR, new Errcall(Err.SERVER_FULL, "The server is already full. Please, try again later."));
                 return false;
@@ -149,7 +149,7 @@ namespace Servers.Sources
             if (!this.CheckRegisterValidity(name))
                 return false;
 
-            if (!this.Game.Users.Contains(name))
+            if (!this.Game.Users.Exists(e => e.EndsWith(name)))
             {
                 this.Game.Users.Add(name);
             }
