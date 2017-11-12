@@ -13,14 +13,22 @@ namespace Client
     /// </summary>
     public partial class App : Application
     {
+        /// <summary>
+        /// Method called when the application start
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
         }
 
-    protected override void OnExit(ExitEventArgs e)
-        {
-            base.OnExit(e);
-        }
+        /// <summary>
+        /// Method called when the application quit
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnExit(ExitEventArgs e)
+            {
+                base.OnExit(e);
+            }
     }
 }

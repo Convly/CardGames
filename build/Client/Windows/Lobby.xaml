@@ -8,7 +8,7 @@
         Title="Lobby" Height="720" Width="1280" Background="#FFFC575E" WindowState="Maximized" WindowStyle="None" ResizeMode="NoResize" KeyDown="Window_KeyDown">
     <Grid VerticalAlignment="Center" Background="#FFFC575E" Height="384">
         <StackPanel HorizontalAlignment="Center" Width="1092">
-            <Label x:Name="Title" Content="Lobby" HorizontalContentAlignment="Center" VerticalAlignment="Top" Height="125" FontSize="72" RenderTransformOrigin="0.467,0.652" HorizontalAlignment="Left" Width="1092" Margin="0,0,0,50"/>
+            <Label x:Name="MainTitle" Content="Lobby" HorizontalContentAlignment="Center" VerticalAlignment="Top" Height="125" FontSize="72" RenderTransformOrigin="0.467,0.652" HorizontalAlignment="Left" Width="1092" Margin="0,0,0,50"/>
             <ProgressBar x:Name="progress" Height="25" Foreground="#FF66CC99" BorderBrush="{x:Null}" Value="0" Margin="2,0,-2,0"/>
             <Label x:Name="waitingMessage" FontSize="24" Height="48" FontStyle="Italic" HorizontalContentAlignment="Center" Margin="0,15,0,0"/>
 
