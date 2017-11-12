@@ -1,26 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Client.Windows
 {
     /// <summary>
-    /// Logique d'interaction pour Lobby.xaml
+    /// Interaction logic for Lobby.xaml
     /// </summary>
     public partial class Lobby : Window
     {
         private static Lobby instance = null;
+
+        /// <summary>
+        /// Getter and Setter for the singleton instance of <see cref="Lobby"/>
+        /// </summary>
         public static Lobby Instance { get => instance; set => instance = value; }
+
+        /// <summary>
+        /// Default constructor of the <see cref="Lobby"/>
+        /// </summary>
         public Lobby()
         {
             instance = this;

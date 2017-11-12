@@ -24,9 +24,20 @@ namespace Client
     {
         private bool processConnect = false;
         private static MainWindow instance;
+
+        /// <summary>
+        /// Getter and Setter for the singleton instance of <see cref="MainWindow"/>
+        /// </summary>
         public static MainWindow Instance { get => instance; set => instance = value; }
+
+        /// <summary>
+        /// Getter and Setter for the ProcessConnect state which indicate if the client is actually trying to connect to a server or not.
+        /// </summary>
         public bool ProcessConnect { get => processConnect; set => processConnect = value; }
 
+        /// <summary>
+        /// Default constructor for the <see cref="MainWindow"/>
+        /// </summary>
         public MainWindow()
         {
             instance = this;

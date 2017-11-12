@@ -1,19 +1,11 @@
 ﻿using CardGameResources.Game;
 using CardGameResources.Net;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Client.Windows
 {
@@ -23,7 +15,14 @@ namespace Client.Windows
     public partial class GameBoard : Window
     {
         private static GameBoard instance;
+        /// <summary>
+        /// Getter and Setter for the singleton instance of the <see cref="GameBoard"/>
+        /// </summary>
         public static GameBoard Instance { get => instance; set => instance = value; }
+
+        /// <summary>
+        /// Default constructor for the <see cref="GameBoard"/>
+        /// </summary>
         public GameBoard()
         {
             instance = this;
@@ -48,7 +47,7 @@ namespace Client.Windows
         }
 
         /// <summary>
-        /// Choose 
+        /// Action to send request of <see cref="GameAction.C_TAKE_TRUMP_AS"/> as a color
         /// </summary>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -56,6 +55,9 @@ namespace Client.Windows
             GameBoard.Instance.trumpAs_pnel.Visibility = Visibility.Hidden;
         }
 
+        /// <summary>
+        /// Action to send request of <see cref="GameAction.C_TAKE_TRUMP_AS"/> as null
+        /// </summary>
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             Network.Client.Instance.SendDataToServer(new Packet(GameClient.Instance.Name, PacketType.GAME, new Gamecall(GameAction.C_TAKE_TRUMP_AS, null)));
@@ -80,6 +82,9 @@ namespace Client.Windows
             }
         }
 
+        /// <summary>
+        /// Set the card dropped previously to the boardCard
+        /// </summary>
         private void boardCard2_Drop(object sender, DragEventArgs e)
         {
             Image imageControl = (Image)sender;
@@ -94,6 +99,9 @@ namespace Client.Windows
             }
         }
 
+        /// <summary>
+        /// Set the card dropped previously to the boardCard
+        /// </summary>
         private void boardCard3_Drop(object sender, DragEventArgs e)
         {
             Image imageControl = (Image)sender;
@@ -108,6 +116,9 @@ namespace Client.Windows
             }
         }
 
+        /// <summary>
+        /// Set the card dropped previously to the boardCard
+        /// </summary>
         private void boardCard4_Drop(object sender, DragEventArgs e)
         {
             Image imageControl = (Image)sender;
@@ -133,6 +144,9 @@ namespace Client.Windows
             DragDrop.DoDragDrop(image, data, DragDropEffects.All);
         }
 
+        /// <summary>
+        /// Get the card for the drop with the mouse
+        /// </summary>
         private void userCard2_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Image image = e.Source as Image;
@@ -140,6 +154,9 @@ namespace Client.Windows
             DragDrop.DoDragDrop(image, data, DragDropEffects.All);
         }
 
+        /// <summary>
+        /// Get the card for the drop with the mouse
+        /// </summary>
         private void userCard3_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Image image = e.Source as Image;
@@ -147,13 +164,19 @@ namespace Client.Windows
             DragDrop.DoDragDrop(image, data, DragDropEffects.All);
         }
 
+        /// <summary>
+        /// Get the card for the drop with the mouse
+        /// </summary>
         private void userCard4_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Image image = e.Source as Image;
             DataObject data = new DataObject(typeof(ImageSource), image.Source);
             DragDrop.DoDragDrop(image, data, DragDropEffects.All);
         }
-
+        
+        /// <summary>
+        /// Get the card for the drop with the mouse
+        /// </summary>
         private void userCard5_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Image image = e.Source as Image;
@@ -161,6 +184,9 @@ namespace Client.Windows
             DragDrop.DoDragDrop(image, data, DragDropEffects.All);
         }
 
+        /// <summary>
+        /// Get the card for the drop with the mouse
+        /// </summary>
         private void userCard6_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Image image = e.Source as Image;
@@ -168,6 +194,9 @@ namespace Client.Windows
             DragDrop.DoDragDrop(image, data, DragDropEffects.All);
         }
 
+        /// <summary>
+        /// Get the card for the drop with the mouse
+        /// </summary>
         private void userCard7_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Image image = e.Source as Image;
@@ -175,6 +204,9 @@ namespace Client.Windows
             DragDrop.DoDragDrop(image, data, DragDropEffects.All);
         }
 
+        /// <summary>
+        /// Get the card for the drop with the mouse
+        /// </summary>
         private void userCard8_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Image image = e.Source as Image;
